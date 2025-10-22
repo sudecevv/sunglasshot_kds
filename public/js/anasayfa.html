@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karar Destek Sistemi</title>
+    <link rel="stylesheet" href="../css/anasayfa.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUzMYhVUeygqg80aQKA2QilnMX4a4WQ31DWw&s" alt="Sunglass Hut Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Ana Sayfa</a></li>
+                <li><a href="sube_analizleri.html">Şube Analizleri</a></li>
+                <li><a href="kampanya_analizleri.html">Kampanya Analizleri</a></li>
+                <li><a href="tahminleme.html">Tahminleme</a></li>
+                <li><a href="harita.html">Harita</a></li> <!-- Harita bağlantısı eklendi -->
+            </ul>
+        </nav>
+        <div class="user-info">
+            <button class="logout-btn" onclick="window.location.href='index.html'">Çıkış</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="chart-container">
+            <!-- İlçelere Göre Satış -->
+            <div class="chart-item">
+                <h2>En Çok Satış Yapan Şubeler</h2>
+                <form id="top-sales-form">
+                    <label for="top-sales-year">Yıl:</label>
+                    <select id="top-sales-year">
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                    </select>
+                    <button type="submit">Filtrele</button>
+                </form>
+                <canvas id="salesChart"></canvas>
+            </div>
+        
+            <!-- İlçelere Göre Şube Sayısı -->
+            <div class="chart-item">
+                <h2>En Az Satış Yapan Şubeler</h2>
+                <form id="lowest-sales-form">
+                    <label for="lowest-sales-year">Yıl:</label>
+                    <select id="lowest-sales-year">
+                        <option value="2025">2025</option>                                                                                                                        ">2024</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                    </select>
+                    <button type="submit">Filtrele</button>
+                </form>
+                <canvas id="branchChart"></canvas>
+            </div>
+        </div>
+        
+    </main>
+
+    <script src="js/anasayfa.js"></script>
+</body>
+</html>

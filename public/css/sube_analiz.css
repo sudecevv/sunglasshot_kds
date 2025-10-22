@@ -1,0 +1,183 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #f9f9f9;
+    color: #ff6700;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header .logo img {
+    height: 50px;
+    margin-right: 10px;
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    padding: 0;
+    margin: 0;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #ff6700;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+nav ul li a.active,
+nav ul li a:hover {
+    color: #FFA726;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.logout-btn {
+    background-color: #D84315;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #BF360C;
+}
+
+/* 2x2 Düzen */
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+}
+
+.chart-item,
+.table-item {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Tablo */
+.table-item table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-item th,
+.table-item td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.table-item th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.table-item tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.table-item tr:hover {
+    background-color: #f1f1f1;
+}
+
+.table-item h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333333;
+}
+
+.chart-item h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333333;
+}
+
+canvas {
+    width: 100%;
+    height: 300px; /* Grafik yüksekliği */
+}
+
+/* Mobil Düzen */
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+
+    .table-item table {
+        font-size: 12px;
+    }
+}
+/* Filtreleme Formları */
+form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+form label {
+    font-size: 14px;
+    color: #333;
+}
+
+form select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+form select:hover {
+    border-color: #ff9900;
+}
+
+form select:focus {
+    outline: none;
+    border-color: #cc7a00;
+    box-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
+}
+
+form button[type="submit"] {
+    background-color: #ff9900;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button[type="submit"]:hover {
+    background-color: #cc7a00;
+}
+
+form button[type="submit"]:active {
+    background-color: #b36b00;
+    transform: scale(0.98);
+}

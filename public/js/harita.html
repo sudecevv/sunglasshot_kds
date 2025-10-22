@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunglass Hot İzmir Mağazaları Haritası</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js kütüphanesini ekliyoruz -->
+    <script src="js/harita.js" defer></script>
+    <link rel="stylesheet" href="../css/harita.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUzMYhVUeygqg80aQKA2QilnMX4a4WQ31DWw&s" alt="Sunglass Hut Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="anasayfa.html">Ana Sayfa</a></li>
+                <li><a href="sube_analizleri.html">Şube Analizleri</a></li>
+                <li><a href="kampanya_analizleri.html">Kampanya Analizleri</a></li>
+                <li><a href="tahminleme.html">Tahminleme</a></li>
+                <li><a href="harita.html" class="active">Harita</a></li>
+            </ul>
+        </nav>
+        <div class="user-info">
+            <button class="logout-btn" onclick="window.location.href='index.html'">Çıkış</button>
+        </div>
+    </header>
+    <main>
+        <!-- Haritaların bulunduğu alan -->
+        <div class="maps-container">
+            <div id="map" class="map"></div> <!-- İlk harita -->
+            <div id="population-map" class="map"></div> <!-- İkinci harita -->
+        </div>
+
+        <!-- Efsaneler (Legend) kısmı -->
+        <div class="legends">
+            <div id="legend">
+                <p><span style="background-color: green; padding: 2px 5px; color: white;">Satışlar 13000 altında</span> </p>
+                <p><span style="background-color: blue; padding: 2px 5px; color: black;">Satışlar 13000 - 14000</span> </p>
+                <p><span style="background-color: red; padding: 2px 5px; color: white;">Satışlar 14000 üzerinde</span> </p>
+            </div>
+            <div id="legend2">
+                <p><span style="background-color: green; padding: 5px 5px; color: white;">Nüfus 100.000'den az</span> </p>
+                <p><span style="background-color: blue; padding: 5px 5px; color: black;">Nüfus 100.000'den çok</span> </p>
+                <p><span style="background-color: red; padding: 5px 5px; color: white;">Nüfus 300.000'den çok</span> </p>
+            </div>
+        </div>
+
+        <!-- Grafik Alanı - Harita ve efsaneler kısmından sonra -->
+        <div class="chart-container">
+            <canvas id="districtChart"></canvas> <!-- Grafik için canvas alanı -->
+        </div>
+        
+    </main>
+</body>
+</html>

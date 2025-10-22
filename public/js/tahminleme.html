@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kampanya Tahminleme</title>
+    <link rel="stylesheet" href="../css/tahminleme.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/tahminleme.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUzMYhVUeygqg80aQKA2QilnMX4a4WQ31DWw&s" alt="Sunglass Hut Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="anasayfa.html">Ana Sayfa</a></li>
+                <li><a href="sube_analizleri.html">Şube Analizleri</a></li>
+                <li><a href="kampanya_analizleri.html">Kampanya Analizleri</a></li>
+                <li><a href="tahminleme.html" class="active">Tahminleme</a></li>
+                <li><a href="harita.html">Harita</a></li>
+            </ul>
+        </nav>
+        <div class="user-info">
+            <button class="logout-btn" onclick="window.location.href='index.html'">Çıkış</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="filter-container">
+            <form id="prediction-form">
+                <label for="campaign">Kampanya Seçin:</label>
+                <select id="campaign" name="campaign">
+                    <option value="1">2 al 1 öde</option>
+                    <option value="2">3 al 2 öde</option>
+                </select>
+
+                <label for="month">Ay Seçin:</label>
+                <select id="month" name="month">
+                    <option value="1">Ocak</option>
+                    <option value="2">Şubat</option>
+                    <option value="3">Mart</option>
+                    <option value="4">Nisan</option>
+                    <option value="5">Mayıs</option>
+                    <option value="6">Haziran</option>
+                    <option value="7">Temmuz</option>
+                    <option value="8">Ağustos</option>
+                    <option value="9">Eylül</option>
+                    <option value="10">Ekim</option>
+                    <option value="11">Kasım</option>
+                    <option value="12">Aralık</option>
+                </select>
+
+                <button type="submit">Tahminle</button>
+            </form>
+        </div>
+
+        <table id="prediction-table">
+            <thead>
+                <tr>
+                    <th>Kampanya Adı</th>
+                    <th>2026Tahmini Kazanç</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Tahminler burada görüntülenecek -->
+            </tbody>
+        </table>
+
+        <!-- Geçmiş Kampanya Verileri Tablosu -->
+        <h1>Gelirler ve Kampanyalar</h1>
+        <table id="past-campaign-table">
+            <thead>
+                <tr>
+                    <th>Kampanya Adı</th>
+                    <th>Toplam Kazanç</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Geçmiş kampanya verileri burada görüntülenecek -->
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>
