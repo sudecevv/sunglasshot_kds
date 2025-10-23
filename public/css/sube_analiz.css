@@ -1,63 +1,113 @@
+/* ===== GENEL STİL ===== */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
 
+/* ===== HEADER ===== */
 header {
     background-color: #f9f9f9;
     color: #ff6700;
-    padding: 10px 20px;
+    padding: 15px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-header .logo img {
-    height: 50px;
-    margin-right: 10px;
+/* Logo */
+header .logo {
+    display: flex;
+    align-items: center;
 }
+
+header .logo img {
+    height: 60px;
+    margin-right: 10px;
+    margin-top: 5px;
+}
+
+/* ===== NAVİGASYON MENÜSÜ ===== */
 nav ul {
     list-style: none;
     display: flex;
-    gap: 15px;
+    gap: 20px;
     padding: 0;
     margin: 0;
 }
 
+nav ul li {
+    position: relative;
+}
+
 nav ul li a {
     text-decoration: none;
-    color: #ff6700;
+    color: #1c1c1c;
     font-weight: bold;
-    transition: color 0.3s;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    padding: 12px 18px;
+    display: inline-block;
+    position: relative;
 }
 
-nav ul li a.active,
+/* Alt çizgi hover efekti */
+nav ul li a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: #ff6700;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+    box-shadow: 0 2px 8px rgba(255, 103, 0, 0.4);
+}
+
 nav ul li a:hover {
-    color: #FFA726;
+    color: #ff6700;
+    text-shadow: 0 2px 8px rgba(255, 103, 0, 0.3);
 }
 
+nav ul li a:hover::after {
+    width: 100%;
+}
+
+/* ===== KULLANICI BİLGİSİ ===== */
 .user-info {
     display: flex;
     align-items: center;
 }
 
+/* Çıkış butonu */
 .logout-btn {
-    background-color: #D84315;
+    background: linear-gradient(135deg, #D84315 0%, #BF360C 100%);
     color: white;
     border: none;
-    padding: 8px 15px;
-    font-size: 0.9rem;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
     cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(216, 67, 21, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .logout-btn:hover {
-    background-color: #BF360C;
+    background: linear-gradient(135deg, #BF360C 0%, #A52A0A 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(216, 67, 21, 0.6);
 }
 
-/* 2x2 Düzen */
+.logout-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(216, 67, 21, 0.4);
+}
+
+/* ===== 2x2 DÜZEN ===== */
 .grid-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -65,6 +115,7 @@ nav ul li a:hover {
     padding: 20px;
 }
 
+/* ===== GRAFİK VE TABLO ALANLARI ===== */
 .chart-item,
 .table-item {
     background: #f9f9f9;
@@ -74,7 +125,36 @@ nav ul li a:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Tablo */
+/* ===== GRAFİK BAŞLIKLARI ===== */
+.chart-item h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #1c1c1c;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px;
+    background: linear-gradient(135deg, #ff9900 0%, #ff6700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    position: relative;
+}
+
+.chart-item h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #ff6700, transparent);
+}
+
+/* ===== TABLO ===== */
 .table-item table {
     width: 100%;
     border-collapse: collapse;
@@ -107,33 +187,17 @@ nav ul li a:hover {
     color: #333333;
 }
 
-.chart-item h2 {
-    text-align: center;
-    margin-bottom: 10px;
-    font-size: 18px;
-    color: #333333;
-}
-
+/* ===== GRAFİK KANVAS ===== */
 canvas {
     width: 100%;
-    height: 300px; /* Grafik yüksekliği */
+    height: 300px;
 }
 
-/* Mobil Düzen */
-@media (max-width: 768px) {
-    .grid-container {
-        grid-template-columns: 1fr;
-    }
-
-    .table-item table {
-        font-size: 12px;
-    }
-}
-/* Filtreleme Formları */
+/* ===== FİLTRE FORMU ===== */
 form {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
     margin-bottom: 20px;
 }
 
@@ -143,41 +207,57 @@ form label {
 }
 
 form select {
-    padding: 8px 12px;
+    padding: 10px 15px;
     font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
     background-color: #fff;
     cursor: pointer;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 form select:hover {
     border-color: #ff9900;
+    box-shadow: 0 2px 8px rgba(255, 153, 0, 0.2);
 }
 
 form select:focus {
     outline: none;
-    border-color: #cc7a00;
-    box-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
+    border-color: #ff6700;
+    box-shadow: 0 0 10px rgba(255, 103, 0, 0.4);
 }
 
 form button[type="submit"] {
-    background-color: #ff9900;
+    background: linear-gradient(135deg, #ff9900 0%, #ff6700 100%);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(255, 103, 0, 0.3);
 }
 
 form button[type="submit"]:hover {
-    background-color: #cc7a00;
+    background: linear-gradient(135deg, #ff6700 0%, #ff4500 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(255, 103, 0, 0.5);
 }
 
 form button[type="submit"]:active {
-    background-color: #b36b00;
-    transform: scale(0.98);
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(255, 103, 0, 0.3);
+}
+
+/* ===== MOBİL DÜZEN ===== */
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+
+    .table-item table {
+        font-size: 12px;
+    }
 }
