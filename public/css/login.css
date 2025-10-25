@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ffe5d0 0%, #ffd4b3 100%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -14,7 +14,7 @@ body {
     max-width: 400px;
     padding: 40px;
     border-radius: 15px;
-    box-shadow:  0 10px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     text-align: center;
     animation: fadeIn 0.5s ease-in;
 }
@@ -41,14 +41,14 @@ body {
 .login-container input[type="text"]:focus,
 .login-container input[type="password"]:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+    border-color: #ff6700;
+    box-shadow: 0 0 10px rgba(255, 103, 0, 0.4);
 }
 
 .login-container button {
     width: 100%;
     padding: 15px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ff9900 0%, #ff6700 100%);
     color: white;
     border: none;
     border-radius: 8px;
@@ -56,14 +56,16 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 15px rgba(255, 103, 0, 0.4);
 }
 .login-container button:hover {
+    background: linear-gradient(135deg, #ff6700 0%, #ff4500 100%);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    box-shadow: 0 6px 20px rgba(255, 103, 0, 0.6);
 }
 .login-container button:active {
     transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(255, 103, 0, 0.3);
 }
 
 .login-container p {
@@ -72,11 +74,11 @@ body {
     color: #888;
 }
 .login-container a {
-    color: #667eea;
+    color: #ff6700;
     text-decoration: none;
     font-weight: bold;
     transition: color 0.3s ease;
 }
 .login-container a:hover {
-    color: #764ba2;
+    color: #ff9900;
 }

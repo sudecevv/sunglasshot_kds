@@ -7,10 +7,14 @@ body {
 header {
     background-color: #f9f9f9;
     color: #ff6700;
-    padding: 15px 20px;
+    padding: 12px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 header .logo {
@@ -19,9 +23,8 @@ header .logo {
 }
 
 header .logo img {
-    height: 60px;
+    height: 55px;
     margin-right: 10px;
-    margin-top: 5px;
 }
 
 nav ul {
@@ -42,7 +45,7 @@ nav ul li a {
     font-weight: bold;
     font-size: 16px;
     transition: all 0.3s ease;
-    padding: 12px 18px;
+    padding: 10px 16px;
     display: inline-block;
     position: relative;
 }
@@ -79,15 +82,15 @@ nav ul li a:hover::after {
     background: linear-gradient(135deg, #D84315 0%, #BF360C 100%);
     color: white;
     border: none;
-    padding: 10px 20px;
-    font-size: 14px;
+    padding: 8px 18px;
+    font-size: 0.9rem;
     font-weight: bold;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 6px;
     transition: all 0.3s ease;
     box-shadow: 0 3px 10px rgba(216, 67, 21, 0.4);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 }
 
 .logout-btn:hover {
@@ -115,17 +118,23 @@ main {
 .chart-item {
     background: #f9f9f9;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     height: 476px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chart-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(255, 103, 0, 0.2);
 }
 
 /* Başlık Belirginleştirme */
 .chart-item h2 {
     text-align: center;
     margin-bottom: 15px;
-    font-size: 20px;
+    font-size: 19px;
     font-weight: bold;
     color: #1c1c1c;
     text-transform: uppercase;
@@ -155,15 +164,15 @@ canvas {
     height: 300px;
 }
 
-/* Filtrele Butonu - Daha Küçük */
+/* Filtrele Butonu */
 button[type="submit"] {
     background: linear-gradient(135deg, #ff9900 0%, #ff6700 100%);
     color: white;
     border: none;
     border-radius: 6px;
-    padding: 10px 20px;
-    font-size: 15px;
-    font-weight: 600;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 3px 10px rgba(255, 103, 0, 0.3);
@@ -172,7 +181,7 @@ button[type="submit"] {
 button[type="submit"]:hover {
     background: linear-gradient(135deg, #ff6700 0%, #ff4500 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(255, 103, 0, 0.5);
+    box-shadow: 0 5px 15px rgba(255, 103, 0, 0.5);
 }
 
 button[type="submit"]:active {
@@ -189,10 +198,10 @@ form {
 }
 
 select {
-    padding: 10px 15px;
+    padding: 8px 12px;
     font-size: 14px;
     border: 2px solid #ddd;
-    border-radius: 8px;
+    border-radius: 6px;
     background-color: #fff;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -206,5 +215,24 @@ select:hover {
 select:focus {
     outline: none;
     border-color: #ff6700;
-    box-shadow: 0 0 10px rgba(255, 103, 0, 0.4);
+    box-shadow: 0 0 8px rgba(255, 103, 0, 0.4);
+}
+
+/* Mobil Düzen */
+@media (max-width: 768px) {
+    .chart-container {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-item {
+        height: auto;
+    }
+
+    form {
+        flex-direction: column;
+    }
+
+    nav ul {
+        gap: 10px;
+    }
 }
