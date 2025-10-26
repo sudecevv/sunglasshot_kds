@@ -286,11 +286,11 @@ router.get("/campaign-profits", async (req, res) => {
                      FROM atasun_kds.sube_masraf 
                      WHERE masraf_tarihi BETWEEN k.baslangic_tarihi AND k.bitis_tarihi)) AS kar
             FROM 
-                atasun_kds.satis s
+                sunglasshot_kds.satis s
             JOIN 
-                atasun_kds.kampanya k ON s.kampanya_id = k.kampanya_id
+                sunglasshot_kds.kampanya k ON s.kampanya_id = k.kampanya_id
             JOIN 
-                atasun_kds.urun u ON s.urun_id = u.urun_id
+                sunglasshot_kds.urun u ON s.urun_id = u.urun_id
             WHERE 
                 YEAR(s.satis_tarih) = ?
                 AND MONTH(s.satis_tarih) = ?
