@@ -1,18 +1,27 @@
 fetch('/api/en-cok-satan-sube')
   .then(res => res.json())
   .then(data => {
-    const subeAdlari = data.map(item => item.sube_adi);
+    console.log("📊 API'den gelen veri:", data);
+
+    if (!Array.isArray(data)) {
+      console.error("⚠️ Beklenen veri formatı dizi değil:", data);
+      alert("Veri alınamadı, konsolu kontrol et!");
+      return;
+    }
+
+    const subeAdlari = data.map(item => item.sube_ad);
     const satislar = data.map(item => item.toplam_satis);
 
-    new Chart(document.getElementById('satisGrafik'), {
+    const ctx = document.getElementById('satisGrafik');
+    new Chart(ctx, {
       type: 'bar',
       data: {
         labels: subeAdlari,
         datasets: [{
-          label: 'Toplam Satış (TL)',
+          label: 'Toplam Satış (Adet)',
           data: satislar,
-          backgroundColor: 'rgba(75, 192, 192, 0.6)',
-          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          borderColor: 'rgba(54, 162, 235, 1)',
           borderWidth: 1
         }]
       },
@@ -22,4 +31,6 @@ fetch('/api/en-cok-satan-sube')
       }
     });
   })
-  .catch(err => console.error('Veri alınamadı:', err));
+  .catch(err => console.error("🚨 Veri alınamadı:", err));
+
+
