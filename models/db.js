@@ -13,12 +13,4 @@ db.connect((err) => {
   }
 });
 
-//db.query('SELECT * FROM ilce', (err, results) => {
- // if (err) {
-   // console.error('Sorgu hatası:', err);
-    //return;
-  //}
-  //console.log('Veriler:', results);
-//});
-
 module.exports = db;

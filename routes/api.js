@@ -2,26 +2,83 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
 
-// En çok satış yapan şubeler
-router.get('/en-cok-satan-sube', (req, res) => {
-  const sql = `
-    SELECT s.sube_ad, SUM(sa.adet) AS toplam_satis
-    FROM satis sa
-    JOIN sube s ON sa.sube_id = s.sube_id
-    GROUP BY s.sube_ad
-    ORDER BY toplam_satis DESC;
-  `;
+router.get('/data/:table', (req, res) => {
+  const tableName = req.params.table;
 
-  db.query(sql, (err, results) => {
+  if (!tableName) {
+    return res.status(400).json({ message: 'Tablo adı gerekli.' });
+  }
+
+  const query = `SELECT * FROM ??`;
+  db.execute(query, [tableName], (err, results) => {
     if (err) {
-      console.error('❌ Sorgu hatası:', err.sqlMessage); // ← düzeltildi
-      return res.status(500).json({ error: err.sqlMessage });
+      console.error('Veritabanı hatası:', err);
+      return res.status(500).json({ message: 'Bir sunucu hatası oluştu.' });
     }
 
-    console.log('✅ API sonuçları:', results);
     res.json(results);
   });
 });
 
-module.exports = router;
+// En çok satış yapan şubeler (yıl parametresi ile)
+router.get('/top-sales', (req, res) => {
+    const { year } = req.query;
+    if (!year) return res.status(400).json({ error: 'Yıl bilgisi gerekli.' });
 
+    const query = `
+        SELECT 
+            s.sube_ad AS branch_name,
+            SUM(sa.adet) AS total_sales
+        FROM 
+            sube s
+        JOIN 
+            satis sa ON s.sube_id = sa.sube_id
+        WHERE 
+            YEAR(sa.satis_tarih) = ?
+        GROUP BY 
+            s.sube_id
+        ORDER BY 
+            total_sales DESC;
+    `;
+
+    db.query(query, [year], (err, results) => {
+        if (err) {
+            console.error('En çok satış yapan şubeler sorgusunda hata:', err);
+            return res.status(500).json({ error: 'Veri alınamadı.' });
+        }
+        res.json(results);
+    });
+});
+
+// En az satış yapan şubeler (yıl parametresi ile)
+router.get('/lowest-sales', (req, res) => {
+    const { year } = req.query;
+    if (!year) return res.status(400).json({ error: 'Yıl bilgisi gerekli.' });
+
+    const query = `
+        SELECT 
+            s.sube_ad AS branch_name,
+            SUM(sa.adet) AS total_sales
+        FROM 
+            sube s
+        JOIN 
+            satis sa ON s.sube_id = sa.sube_id
+        WHERE 
+            YEAR(sa.satis_tarih) = ?
+        GROUP BY 
+            s.sube_id
+        ORDER BY 
+            total_sales ASC
+        LIMIT 10;
+    `;
+
+    db.query(query, [year], (err, results) => {
+        if (err) {
+            console.error('En az satış yapan şubeler sorgusunda hata:', err);
+            return res.status(500).json({ error: 'Veri alınamadı.' });
+        }
+        res.json(results);
+    });
+});
+
+module.exports = router;
