@@ -9,11 +9,11 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-// Statik dosya sunumu
-app.use(express.static(path.join(__dirname, 'public')));
-
 // API routes
 app.use('/api', apiRoutes);
+
+// Statik dosya sunumu
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Sunucu başlat
 app.listen(PORT, () => {
