@@ -55,37 +55,42 @@ router.get('/top-sales', (req, res) => {
 });
 
 
-// 🔹 En az satış yapan şubeler (yıl parametresiyle)
-router.get('/lowest-sales', (req, res) => {
+// 🔹 Ürün kategorisine göre şube satış performansı
+router.get('/sube-kategori-performans', (req, res) => {
   const { year } = req.query;
-
   if (!year) return res.status(400).json({ error: 'Yıl bilgisi gerekli.' });
 
   const query = `
     SELECT 
       s.sube_ad AS sube_ad,
+      k.kategori_ad AS kategori_ad,
       SUM(sa.adet) AS toplam_satis
     FROM 
       satis sa
     JOIN 
       sube s ON sa.sube_id = s.sube_id
+    JOIN 
+      urun u ON sa.urun_id = u.urun_id
+    JOIN 
+      kategori k ON u.kategori_id = k.kategori_id
     WHERE 
       YEAR(sa.satis_tarih) = ?
     GROUP BY 
-      s.sube_id
+      s.sube_ad, k.kategori_ad
     ORDER BY 
-      toplam_satis ASC;
+      s.sube_ad, k.kategori_ad;
   `;
 
   db.query(query, [year], (err, results) => {
     if (err) {
-      console.error('❌ En az satış yapan şubeler sorgusunda hata:', err);
-      return res.status(500).json({ error: 'Veri alınamadı.' });
+      console.error('❌ Ürün kategorisine göre şube performansı sorgusunda hata:', err);
+      return res.status(500).json({ error: err.sqlMessage });
     }
-    console.log(`✅ ${year} yılı en az satan şubeler:`, results.length);
+    console.log(`✅ ${year} yılı kategori bazlı satış performansı:`, results.length);
     res.json(results);
   });
 });
+
 
 //
 router.get('/campaign-performance', (req, res) => {

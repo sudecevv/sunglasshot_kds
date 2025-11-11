@@ -47,51 +47,67 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchTopSales(topYearSelect.value);
   });
 
+// --- Ürün Kategorisine Göre Şube Performansı ---
+const categoryForm = document.getElementById('category-performance-form');
+const categoryYearSelect = document.getElementById('category-year');
+const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+let categoryChart;
 
+const fetchCategoryPerformance = (year) => {
+  fetch(`http://localhost:3000/api/sube-kategori-performans?year=${year}`)
+    .then(res => res.json())
+    .then(data => {
+      console.log(`📊 ${year} yılı kategori performansı verisi:`, data);
 
-  // --- En az satış yapan şubeler ---
-  const lowForm = document.getElementById('lowest-sales-form');
-  const lowYearSelect = document.getElementById('lowest-sales-year');
-  const lowCtx = document.getElementById('branchChart').getContext('2d');
-  let lowChart;
+      const subeler = [...new Set(data.map(item => item.sube_ad))];
+      const kategoriler = [...new Set(data.map(item => item.kategori_ad))];
 
-  const fetchLowestSales = (year) => {
-    fetch(`http://localhost:3000/api/lowest-sales?year=${year}`)
-      .then(res => res.json())
-      .then(data => {
-        console.log(`📉 ${year} yılı en az satış yapan şubeler:`, data);
+      const datasets = kategoriler.map(kat => ({
+        label: kat,
+        data: subeler.map(sube => {
+          const kayit = data.find(d => d.sube_ad === sube && d.kategori_ad === kat);
+          return kayit ? Number(kayit.toplam_satis) : 0;
+        }),
+        backgroundColor: getRandomColor()
+      }));
 
-        const subeAdlari = data.map(item => item.sube_ad);
-        const satislar = data.map(item => Number(item.toplam_satis));
+      if (categoryChart) categoryChart.destroy();
 
-        if (lowChart) lowChart.destroy();
-
-        lowChart = new Chart(lowCtx, {
-          type: 'bar',
-          data: {
-            labels: subeAdlari,
-            datasets: [{
-              label: `${year} Yılı En Az Satış (Adet)`,
-              data: satislar,
-              backgroundColor: 'rgba(255, 99, 132, 0.6)',
-              borderColor: 'rgba(255, 99, 132, 1)',
-              borderWidth: 1
-            }]
+      categoryChart = new Chart(categoryCtx, {
+        type: 'bar',
+        data: {
+          labels: subeler,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: { stacked: true },
+            y: { stacked: true, beginAtZero: true }
           },
-          options: {
-            responsive: true,
-            scales: { y: { beginAtZero: true } }
+          plugins: {
+            title: {
+              display: true,
+              text: `${year} Yılı Ürün Kategorisine Göre Şube Satışları`
+            }
           }
-        });
-      })
-      .catch(err => console.error("🚨 En az satış verisi alınamadı:", err));
-  };
+        }
+      });
+    })
+    .catch(err => console.error("🚨 Kategori performansı verisi alınamadı:", err));
+};
 
-  fetchLowestSales(lowYearSelect.value);
+// Sayfa yüklenince varsayılan yıl için çek
+fetchCategoryPerformance(categoryYearSelect.value);
 
-  lowForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    fetchLowestSales(lowYearSelect.value);
-  });
+// Filtrele butonu
+categoryForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  fetchCategoryPerformance(categoryYearSelect.value);
+});
+
+function getRandomColor() {
+  return `hsl(${Math.random() * 360}, 70%, 70%)`;
+}
 
 });
