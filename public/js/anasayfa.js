@@ -53,6 +53,14 @@ const categoryYearSelect = document.getElementById('category-year');
 const categoryCtx = document.getElementById('categoryChart').getContext('2d');
 let categoryChart;
 
+// 🎨 Sabit renk paleti (görseldeki tonlara uygun)
+  const colorPalette = {
+    "Çocuk Gözlük": "rgba(127, 255, 212, 0.8)",   // Aqua - açık yeşilimsi mavi
+    "Erkek Gözlük": "rgba(255, 105, 97, 0.8)",    // Açık kırmızı
+    "Kadın Gözlük": "rgba(130, 120, 255, 0.8)",   // Mor-mavi
+    "Unisex": "rgba(238, 130, 238, 0.8)"          // Açık pembe - mor
+  };
+
 const fetchCategoryPerformance = (year) => {
   fetch(`http://localhost:3000/api/sube-kategori-performans?year=${year}`)
     .then(res => res.json())
@@ -68,7 +76,9 @@ const fetchCategoryPerformance = (year) => {
           const kayit = data.find(d => d.sube_ad === sube && d.kategori_ad === kat);
           return kayit ? Number(kayit.toplam_satis) : 0;
         }),
-        backgroundColor: getRandomColor()
+        backgroundColor: colorPalette[kat] || 'rgba(100,100,100,0.7)',
+        borderColor: 'rgba(255,255,255,0.8)',
+        borderWidth: 1
       }));
 
       if (categoryChart) categoryChart.destroy();
@@ -82,16 +92,24 @@ const fetchCategoryPerformance = (year) => {
         options: {
           responsive: true,
           scales: {
-            x: { stacked: true },
-            y: { stacked: true, beginAtZero: true }
+            x: { stacked: true,ticks: { color: '#333' } },
+            y: { stacked: true, beginAtZero: true ,ticks: { color: '#333' }}
           },
           plugins: {
             title: {
               display: true,
-              text: `${year} Yılı Ürün Kategorisine Göre Şube Satışları`
+              text: `${year} Yılı Ürün Kategorisine Göre Şube Satışları`,
+              font: { size: 18, weight: 'bold' }
+            },
+              legend: {
+                position: 'bottom',
+                labels: {
+                  font: { size: 13 },
+                  color: '#333'
+                }
+              }
             }
           }
-        }
       });
     })
     .catch(err => console.error("🚨 Kategori performansı verisi alınamadı:", err));
@@ -105,9 +123,4 @@ categoryForm.addEventListener('submit', (e) => {
   e.preventDefault();
   fetchCategoryPerformance(categoryYearSelect.value);
 });
-
-function getRandomColor() {
-  return `hsl(${Math.random() * 360}, 70%, 70%)`;
-}
-
 });
