@@ -18,3 +18,24 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 });
+
+// Rastgele parıltı efektleri oluştur
+        function createSparkles() {
+            const sparkleCount = 50;
+            for (let i = 0; i < sparkleCount; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 3 + 's';
+                document.body.appendChild(sparkle);
+            }
+        }
+
+        createSparkles();
+
+        // Form submit örneği
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('responseMessage').textContent = 'Giriş yapılıyor...';
+        });
