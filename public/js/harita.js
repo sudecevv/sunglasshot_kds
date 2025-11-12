@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(data => {
             data.forEach(ilce => {
                 let color;
-                if (ilce.nufus < 100000) color = "green";
+                if (ilce.nufus2025 < 100000) color = "green";
                 else if (ilce.nufus2025 >= 100000 && ilce.nufus2025 <= 300000) color = "blue";
                 else color = "red";
 

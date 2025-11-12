@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
 
+console.log("API router yüklendi");
+
+
 // 🔹 Belirtilen tablodaki tüm verileri döndür (genel amaçlı endpoint)
 router.get('/data/:table', (req, res) => {
   const tableName = req.params.table;
@@ -21,6 +24,15 @@ router.get('/data/:table', (req, res) => {
   });
 });
 
+// 🔹 Şubeleri listele
+router.get('/subeler', (req, res) => {
+    console.log("Şube listesi isteği geldi");
+    const sql = `SELECT sube_id, sube_ad FROM sube ORDER BY sube_ad`;
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Şube listesi alınamadı' });
+        res.json(results);
+    });
+});
 
 // 🔹 En çok satış yapan şubeler (yıl parametresiyle)
 router.get('/top-sales', (req, res) => {
@@ -111,8 +123,17 @@ router.get("/satis-harita", (req, res) => {
 // 👥 Nüfus Haritası
 router.get("/nufus-harita", (req, res) => {
   const sql = `
-    SELECT ilce_ad, lat, lon, nufus2025
-    FROM ilce;
+    SELECT 
+      i.ilce_ad,
+      AVG(s.lat) AS lat,
+      AVG(s.lon) AS lon,
+      i.nufus2025
+    FROM 
+      ilce i
+    JOIN 
+      sube s ON i.ilce_id = s.ilce_id
+    GROUP BY 
+      i.ilce_ad, i.nufus2025;
   `;
   db.query(sql, (err, results) => {
     if (err) {
@@ -147,4 +168,61 @@ router.get('/kampanya-gelirleri', (req, res) => {
   });
 });
 
+// server/routes/tahminleme.js
+router.get('/tahmin-veri', (req, res) => {
+  const sql = `
+    SELECT 
+      k.kampanya_ad, 
+      YEAR(k.baslangic_tarihi) AS yil, 
+      SUM(u.fiyat * s.adet) AS toplam_gelir
+    FROM satis s
+    JOIN urun u ON s.urun_id = u.urun_id
+    JOIN kampanya k ON s.kampanya_id = k.kampanya_id
+    GROUP BY k.kampanya_ad, YEAR(k.baslangic_tarihi)
+    ORDER BY yil;
+  `;
+  
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Tahmin verisi alınamadı:', err);
+      return res.status(500).json({ message: 'Veri alınırken hata oluştu.' });
+    }
+    res.json(results);
+  });
+});
+
+
+// 2️⃣ Kampanyalar arası toplam kazanç karşılaştırması
+router.get('/kampanya-performans', (req, res) => {
+    const { yil, sube1, sube2 } = req.query;
+
+    if (!yil || !sube1 || !sube2) {
+        return res.status(400).json({ error: "yil, sube1 ve sube2 parametreleri gerekli" });
+    }
+
+    const sql = `
+        SELECT 
+            k.kampanya_ad,
+            SUM(CASE WHEN s.sube_id = ? THEN s.adet * u.fiyat ELSE 0 END) AS sube1_toplam,
+            SUM(CASE WHEN s.sube_id = ? THEN s.adet * u.fiyat ELSE 0 END) AS sube2_toplam
+        FROM satis s
+        JOIN urun u ON s.urun_id = u.urun_id
+        JOIN kampanya k ON s.kampanya_id = k.kampanya_id
+        WHERE YEAR(s.satis_tarih) = ?
+        GROUP BY k.kampanya_ad
+        ORDER BY k.kampanya_ad;
+    `;
+
+    db.query(sql, [sube1, sube2, yil], (err, results) => {
+        if (err) {
+            console.error('Kampanya performans verisi alınamadı:', err);
+            return res.status(500).json({ error: 'Veri alınamadı' });
+        }
+        res.json(results);
+    });
+});
+
 module.exports = router;
+
+
+

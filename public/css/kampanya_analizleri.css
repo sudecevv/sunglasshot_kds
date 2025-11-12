@@ -181,6 +181,7 @@ canvas {
     transition: all 0.3s ease;
     cursor: pointer;
     font-size: 14px;
+    margin-right: 8px;
 }
 
 .filter-container select:hover {
