@@ -220,6 +220,21 @@ canvas {
     box-shadow: 0 2px 8px rgba(255, 103, 0, 0.3);
 }
 
+.dashboard-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.dashboard-card h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+
 /* ===== MOBİL DÜZEN ===== */
 @media (max-width: 768px) {
     .chart-container {

@@ -2,9 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
 
-console.log("API router yüklendi");
-
-
 // 🔹 Belirtilen tablodaki tüm verileri döndür (genel amaçlı endpoint)
 router.get('/data/:table', (req, res) => {
   const tableName = req.params.table;
@@ -26,7 +23,6 @@ router.get('/data/:table', (req, res) => {
 
 // 🔹 Şubeleri listele
 router.get('/subeler', (req, res) => {
-    console.log("Şube listesi isteği geldi");
     const sql = `SELECT sube_id, sube_ad FROM sube ORDER BY sube_ad`;
     db.query(sql, (err, results) => {
         if (err) return res.status(500).json({ error: 'Şube listesi alınamadı' });
@@ -220,6 +216,126 @@ router.get('/kampanya-performans', (req, res) => {
         }
         res.json(results);
     });
+});
+
+router.get('/kampanya-karlar', (req, res) => {
+  const sql = `
+    SELECT 
+      k.kampanya_id,
+      k.kampanya_ad,
+      YEAR(k.baslangic_tarihi) AS yil,
+      COALESCE(SUM(s.adet * u.fiyat), 0) - 
+      COALESCE(SUM(sm.masraf), 0) AS toplam_kar
+    FROM kampanya k
+    LEFT JOIN satis s ON s.kampanya_id = k.kampanya_id
+    LEFT JOIN urun u ON s.urun_id = u.urun_id
+    LEFT JOIN sube_masraf sm ON s.sube_id = sm.sube_id
+    GROUP BY k.kampanya_id, k.kampanya_ad, YEAR(k.baslangic_tarihi)
+    ORDER BY yil ASC, k.kampanya_ad ASC;
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('❌ Kampanya karları hatası:', err);
+      return res.status(500).json({ error: 'Veri alınamadı' });
+    }
+    console.log("✅ Kampanya karları verisi:", results);
+    res.json(results);
+  });
+});
+
+
+// 🔹 Şube bazlı aylık kar analizi
+router.get("/sube-aylik-kar", (req, res) => {
+  const { yil, sube_id } = req.query;
+
+  const sql = `
+    SELECT 
+      MONTH(s.satis_tarih) AS ay,
+      SUM(s.adet * u.fiyat) - COALESCE(SUM(sm.masraf), 0) AS kar
+    FROM satis s
+    JOIN urun u ON s.urun_id = u.urun_id
+    LEFT JOIN sube_masraf sm 
+      ON sm.sube_id = s.sube_id 
+      AND YEAR(sm.masraf_tarihi) = ?
+      AND MONTH(sm.masraf_tarihi) = MONTH(s.satis_tarih)
+    WHERE YEAR(s.satis_tarih) = ?
+      AND s.sube_id = ?
+    GROUP BY MONTH(s.satis_tarih)
+    ORDER BY ay ASC;
+  `;
+
+  db.query(sql, [yil, yil, sube_id], (err, results) => {
+    if (err) {
+      console.error("❌ Şube aylık kar verisi hatası:", err);
+      return res.status(500).json({ error: "Veri alınamadı" });
+    }
+    res.json(results);
+  });
+});
+
+// 🔹 Şubeleri listelemek için
+router.get("/subeler", (req, res) => {
+  const sql = "SELECT sube_id, sube_ad FROM sube ORDER BY sube_ad ASC;";
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("❌ Şubeler hatası:", err);
+      return res.status(500).json({ error: "Veri alınamadı" });
+    }
+    res.json(results);
+  });
+});
+
+// 🔹 Yıllara göre şubelerin toplam karları
+router.get("/sube-toplam-kar", (req, res) => {
+  const { yil } = req.query;
+
+  const sql = `
+    SELECT 
+      s.sube_id,
+      sube.sube_ad,
+      SUM(s.adet * u.fiyat) - COALESCE(SUM(sm.masraf), 0) AS toplam_kar
+    FROM satis s
+    JOIN urun u ON s.urun_id = u.urun_id
+    JOIN sube ON s.sube_id = sube.sube_id
+    LEFT JOIN sube_masraf sm 
+      ON sm.sube_id = s.sube_id 
+      AND YEAR(sm.masraf_tarihi) = ?
+    WHERE YEAR(s.satis_tarih) = ?
+    GROUP BY s.sube_id, sube.sube_ad
+    ORDER BY toplam_kar DESC;
+  `;
+
+  db.query(sql, [yil, yil], (err, results) => {
+    if (err) {
+      console.error("❌ Şube toplam kar hatası:", err);
+      return res.status(500).json({ error: "Veri alınamadı" });
+    }
+    res.json(results);
+  });
+});
+
+// 🔹 Şubenin aylara göre karı
+router.get('/sube-aylik-kar', (req, res) => {
+  const { yil, sube } = req.query;
+  if (!yil || !sube) return res.status(400).json({ error: "yil ve sube gerekli" });
+
+  const sql = `
+    SELECT 
+      s.sube_ad,
+      MONTH(sa.satis_tarih) AS ay,
+      SUM(sa.adet * u.fiyat) AS toplam_kar
+    FROM satis sa
+    JOIN urun u ON sa.urun_id = u.urun_id
+    JOIN sube s ON sa.sube_id = s.sube_id
+    WHERE YEAR(sa.satis_tarih) = ? AND s.sube_id = ?
+    GROUP BY ay, s.sube_ad
+    ORDER BY ay;
+  `;
+  db.query(sql, [yil, sube], (err, results) => {
+    if (err) return res.status(500).json({ error: err.sqlMessage });
+    res.json(results);
+  });
 });
 
 module.exports = router;

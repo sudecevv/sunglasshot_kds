@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let campaignChart;
 
     // 🔹 1️⃣ Şubeleri çek ve dropdownlara ekle
-    fetch("/api/subeler") // localhost:3000 üzerinden statik değil, API rotası
+    fetch("http://localhost:3000/api/subeler")
         .then(res => {
             if (!res.ok) throw new Error(`Şube listesi alınamadı: ${res.status}`);
             return res.json();
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        fetch(`/api/kampanya-performans?yil=${yil}&sube1=${sube1}&sube2=${sube2}`)
+        fetch(`http://localhost:3000/api/kampanya-performans?yil=${yil}&sube1=${sube1}&sube2=${sube2}`)
             .then(res => {
                 if (!res.ok) throw new Error(`Kampanya verisi alınamadı: ${res.status}`);
                 return res.json();
@@ -83,3 +83,63 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(err => console.error(err));
     });
 });
+
+function loadKampanyaKarChart() {
+  fetch("http://localhost:3000/api/kampanya-karlar")
+    .then(res => {
+      if (!res.ok) throw new Error("Kampanya karları verisi alınamadı.");
+      return res.json();
+    })
+    .then(data => {
+      if (!data || data.length === 0) {
+        console.warn("⚠️ Kampanya kar verisi boş geldi");
+        return;
+      }
+
+      // 📊 Veriyi yıl bazlı gruplandır
+      const grouped = {};
+      data.forEach(d => {
+        const yil = d.yil || "Bilinmiyor";
+        if (!grouped[yil]) grouped[yil] = [];
+        grouped[yil].push({ kampanya: `${d.kampanya_ad} ${yil}`, kar: Number(d.toplam_kar) });
+      });
+
+      const labels = data.map(d => `${d.kampanya_ad} ${d.yil}`);
+      const datasets = [{
+        label: "Kampanya Karları (TL)",
+        data: data.map(d => Number(d.toplam_kar)),
+        backgroundColor: "rgba(54, 162, 235, 0.4)",
+        borderColor: "rgba(54, 162, 235, 1)",
+        borderWidth: 1
+      }];
+
+      const ctx = document.getElementById("kampanyaKarChart").getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "top" },
+            title: { display: true, text: "Tüm Yıllardaki Kampanya Karları" }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: val => val.toLocaleString("tr-TR") + " ₺"
+              }
+            },
+            x: {
+              ticks: { autoSkip: false, maxRotation: 45, minRotation: 45 }
+            }
+          }
+        }
+      });
+    })
+    .catch(err => console.error(err));
+}
+
+
+// Sayfa yüklenince otomatik çalışsın:
+document.addEventListener("DOMContentLoaded", loadKampanyaKarChart);
