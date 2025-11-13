@@ -220,20 +220,39 @@ canvas {
     box-shadow: 0 2px 8px rgba(255, 103, 0, 0.3);
 }
 
+/* ===== KAMPANYA KARI KARTI ===== */
 .dashboard-card {
-    background: #fff;
-    border-radius: 16px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    height: 420px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(255, 103, 0, 0.2);
 }
 
 .dashboard-card h2 {
     text-align: center;
-    color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    font-size: 19px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #ff9900 0%, #ff6700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
+.dashboard-card canvas {
+    width: 100%;
+    height: 220px;
+}
 
 /* ===== MOBİL DÜZEN ===== */
 @media (max-width: 768px) {

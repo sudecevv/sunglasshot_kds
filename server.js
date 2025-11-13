@@ -3,6 +3,9 @@ const cors = require('cors');
 const path = require('path');
 const apiRoutes = require('./routes/api');
 
+console.log("📦 API dosyası yüklendi:", apiRoutes);
+
+
 const app = express();
 const PORT = 3000;
 

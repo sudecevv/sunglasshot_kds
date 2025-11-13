@@ -1,48 +1,51 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const yearSelect = document.getElementById("top-sales-year");
+  /* ==========================================================
+     📊 1️⃣ ŞUBELERİN AYLIK KARLARI GRAFİĞİ
+  ========================================================== */
+  const monthForm = document.getElementById("top-sales-form");
+  const monthYearSelect = document.getElementById("top-sales-year");
   const branchSelect = document.getElementById("top-sales-branch");
-  const form = document.getElementById("top-sales-form");
-  const ctx = document.getElementById("salesChart").getContext("2d");
-  let salesChart;
+  const monthCtx = document.getElementById("salesChart").getContext("2d");
+  let monthlyChart;
 
-  // 📌 Şubeleri dropdown’a yükle
+  // 🔸 Şubeleri dropdown’a yükle
   fetch("http://localhost:3000/api/subeler")
-    .then(res => res.json())
-    .then(data => {
-      data.forEach(sube => {
+    .then((res) => res.json())
+    .then((data) => {
+      data.forEach((sube) => {
         const opt = document.createElement("option");
         opt.value = sube.sube_id;
         opt.textContent = sube.sube_ad;
         branchSelect.appendChild(opt);
       });
     })
-    .catch(err => console.error("Şubeler alınamadı:", err));
+    .catch((err) => console.error("Şubeler alınamadı:", err));
 
-  // 📊 Aylık kar grafiğini yükle
-  form.addEventListener("submit", e => {
+  // 🔸 Form gönderildiğinde aylık karları getir
+  monthForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const yil = yearSelect.value;
+    const yil = monthYearSelect.value;
     const subeId = branchSelect.value;
+
     if (!subeId) {
       alert("Lütfen bir şube seçin.");
       return;
     }
 
     fetch(`http://localhost:3000/api/sube-aylik-kar?yil=${yil}&sube_id=${subeId}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         const aylar = [
           "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
           "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
         ];
 
-        // Verileri grafiğe hazırla
         const karlar = new Array(12).fill(0);
-        data.forEach(d => karlar[d.ay - 1] = d.kar);
+        data.forEach((d) => (karlar[d.ay - 1] = d.kar));
 
-        if (salesChart) salesChart.destroy();
+        if (monthlyChart) monthlyChart.destroy();
 
-        salesChart = new Chart(ctx, {
+        monthlyChart = new Chart(monthCtx, {
           type: "bar",
           data: {
             labels: aylar,
@@ -56,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           options: {
             responsive: true,
-            indexAxis: "x", // 📊 Yatayda aylar
             plugins: {
               legend: { position: "top" },
               title: {
@@ -75,6 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
       })
-      .catch(err => console.error("Aylık karlar alınamadı:", err));
+      .catch((err) => console.error("Aylık karlar alınamadı:", err));
   });
 });
