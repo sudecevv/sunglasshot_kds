@@ -18,6 +18,14 @@ document.addEventListener("DOMContentLoaded", () => {
         opt.textContent = sube.sube_ad;
         branchSelect.appendChild(opt);
       });
+
+      // ⭐ Varsayılan şube otomatik seçilsin
+    if (data.length > 0) {
+      branchSelect.value = data[0].sube_id;
+    }
+
+    // ⭐ Sayfa açıldığında otomatik aylık kar grafiğini getir
+    monthForm.dispatchEvent(new Event("submit"));
     })
     .catch((err) => console.error("Şubeler alınamadı:", err));
 

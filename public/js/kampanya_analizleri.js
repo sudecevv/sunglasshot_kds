@@ -7,20 +7,30 @@ document.addEventListener("DOMContentLoaded", () => {
     let campaignChart;
 
     // 🔹 1️⃣ Şubeleri çek ve dropdownlara ekle
-    fetch("http://localhost:3000/api/subeler")
-        .then(res => {
-            if (!res.ok) throw new Error(`Şube listesi alınamadı: ${res.status}`);
-            return res.json();
-        })
-        .then(subeler => {
-            subeler.forEach(sube => {
-                const opt1 = new Option(sube.sube_ad, sube.sube_id);
-                const opt2 = new Option(sube.sube_ad, sube.sube_id);
-                sube1Select.add(opt1);
-                sube2Select.add(opt2);
-            });
-        })
-        .catch(err => console.error(err));
+fetch("http://localhost:3000/api/subeler")
+    .then(res => {
+        if (!res.ok) throw new Error(`Şube listesi alınamadı: ${res.status}`);
+        return res.json();
+    })
+    .then(subeler => {
+        subeler.forEach(sube => {
+            const opt1 = new Option(sube.sube_ad, sube.sube_id);
+            const opt2 = new Option(sube.sube_ad, sube.sube_id);
+            sube1Select.add(opt1);
+            sube2Select.add(opt2);
+        });
+
+        // ⭐ Varsayılan seçimler
+        if (subeler.length >= 2) {
+            sube1Select.value = subeler[0].sube_id;
+            sube2Select.value = subeler[1].sube_id;
+        }
+
+        // ⭐ Sayfa açıldığında grafik otomatik yüklensin
+        filterForm.dispatchEvent(new Event("submit"));
+    })
+    .catch(err => console.error(err));
+
 
     // 🔹 2️⃣ Form submit olunca grafiği güncelle
     filterForm.addEventListener("submit", e => {
