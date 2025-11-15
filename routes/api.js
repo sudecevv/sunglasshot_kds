@@ -245,99 +245,235 @@ router.get('/kampanya-karlar', (req, res) => {
 });
 
 
-// 🔹 Şube bazlı aylık kar analizi
-router.get("/sube-aylik-kar", (req, res) => {
-  const { yil, sube_id } = req.query;
+// // 🔹 Şube bazlı aylık kar analizi
+// router.get("/sube-aylik-kar", (req, res) => {
+//   const { yil, sube_id } = req.query;
 
-  const sql = `
-    SELECT 
-      MONTH(s.satis_tarih) AS ay,
-      SUM(s.adet * u.fiyat) - COALESCE(SUM(sm.masraf), 0) AS kar
-    FROM satis s
-    JOIN urun u ON s.urun_id = u.urun_id
-    LEFT JOIN sube_masraf sm 
-      ON sm.sube_id = s.sube_id 
-      AND YEAR(sm.masraf_tarihi) = ?
-      AND MONTH(sm.masraf_tarihi) = MONTH(s.satis_tarih)
-    WHERE YEAR(s.satis_tarih) = ?
-      AND s.sube_id = ?
-    GROUP BY MONTH(s.satis_tarih)
-    ORDER BY ay ASC;
-  `;
+//   const sql = `
+//     SELECT 
+//       MONTH(s.satis_tarih) AS ay,
+//       SUM(s.adet * u.fiyat) - COALESCE(SUM(sm.masraf), 0) AS kar
+//     FROM satis s
+//     JOIN urun u ON s.urun_id = u.urun_id
+//     LEFT JOIN sube_masraf sm 
+//       ON sm.sube_id = s.sube_id 
+//       AND YEAR(sm.masraf_tarihi) = ?
+//       AND MONTH(sm.masraf_tarihi) = MONTH(s.satis_tarih)
+//     WHERE YEAR(s.satis_tarih) = ?
+//       AND s.sube_id = ?
+//     GROUP BY MONTH(s.satis_tarih)
+//     ORDER BY ay ASC;
+//   `;
 
-  db.query(sql, [yil, yil, sube_id], (err, results) => {
-    if (err) {
-      console.error("❌ Şube aylık kar verisi hatası:", err);
-      return res.status(500).json({ error: "Veri alınamadı" });
-    }
-    res.json(results);
-  });
-});
+//   db.query(sql, [yil, yil, sube_id], (err, results) => {
+//     if (err) {
+//       console.error("❌ Şube aylık kar verisi hatası:", err);
+//       return res.status(500).json({ error: "Veri alınamadı" });
+//     }
+//     res.json(results);
+//   });
+// });
 
-// 🔹 Şubeleri listelemek için
-router.get("/subeler", (req, res) => {
-  const sql = "SELECT sube_id, sube_ad FROM sube ORDER BY sube_ad ASC;";
-  db.query(sql, (err, results) => {
-    if (err) {
-      console.error("❌ Şubeler hatası:", err);
-      return res.status(500).json({ error: "Veri alınamadı" });
-    }
-    res.json(results);
-  });
-});
+// // 🔹 Şubeleri listelemek için
+// router.get("/subeler", (req, res) => {
+//   const sql = "SELECT sube_id, sube_ad FROM sube ORDER BY sube_ad ASC;";
+//   db.query(sql, (err, results) => {
+//     if (err) {
+//       console.error("❌ Şubeler hatası:", err);
+//       return res.status(500).json({ error: "Veri alınamadı" });
+//     }
+//     res.json(results);
+//   });
+// });
 
-// 🔹 Yıllara göre şubelerin toplam karları
-router.get("/sube-toplam-kar", (req, res) => {
-  const { yil } = req.query;
+// // 🔹 Yıllara göre şubelerin toplam karları
+// router.get("/sube-toplam-kar", (req, res) => {
+//   const { yil } = req.query;
 
-  const sql = `
-    SELECT 
-      s.sube_id,
-      sube.sube_ad,
-      SUM(s.adet * u.fiyat) - COALESCE(SUM(sm.masraf), 0) AS toplam_kar
-    FROM satis s
-    JOIN urun u ON s.urun_id = u.urun_id
-    JOIN sube ON s.sube_id = sube.sube_id
-    LEFT JOIN sube_masraf sm 
-      ON sm.sube_id = s.sube_id 
-      AND YEAR(sm.masraf_tarihi) = ?
-    WHERE YEAR(s.satis_tarih) = ?
-    GROUP BY s.sube_id, sube.sube_ad
-    ORDER BY toplam_kar DESC;
-  `;
+//   const sql = `
+//     SELECT 
+//       s.sube_id,
+//       sube.sube_ad,
+//       SUM(s.adet * u.fiyat) - COALESCE(SUM(sm.masraf), 0) AS toplam_kar
+//     FROM satis s
+//     JOIN urun u ON s.urun_id = u.urun_id
+//     JOIN sube ON s.sube_id = sube.sube_id
+//     LEFT JOIN sube_masraf sm 
+//       ON sm.sube_id = s.sube_id 
+//       AND YEAR(sm.masraf_tarihi) = ?
+//     WHERE YEAR(s.satis_tarih) = ?
+//     GROUP BY s.sube_id, sube.sube_ad
+//     ORDER BY toplam_kar DESC;
+//   `;
 
-  db.query(sql, [yil, yil], (err, results) => {
-    if (err) {
-      console.error("❌ Şube toplam kar hatası:", err);
-      return res.status(500).json({ error: "Veri alınamadı" });
-    }
-    res.json(results);
-  });
-});
+//   db.query(sql, [yil, yil], (err, results) => {
+//     if (err) {
+//       console.error("❌ Şube toplam kar hatası:", err);
+//       return res.status(500).json({ error: "Veri alınamadı" });
+//     }
+//     res.json(results);
+//   });
+// });
 
 // 🔹 Şubenin aylara göre karı
-router.get('/sube-aylik-kar', (req, res) => {
-  const { yil, sube } = req.query;
-  if (!yil || !sube) return res.status(400).json({ error: "yil ve sube gerekli" });
+router.get("/sube-aylik-kar", (req, res) => {
+    const { yil, sube_id } = req.query;
 
-  const sql = `
-    SELECT 
-      s.sube_ad,
-      MONTH(sa.satis_tarih) AS ay,
-      SUM(sa.adet * u.fiyat) AS toplam_kar
-    FROM satis sa
-    JOIN urun u ON sa.urun_id = u.urun_id
-    JOIN sube s ON sa.sube_id = s.sube_id
-    WHERE YEAR(sa.satis_tarih) = ? AND s.sube_id = ?
-    GROUP BY ay, s.sube_ad
-    ORDER BY ay;
-  `;
-  db.query(sql, [yil, sube], (err, results) => {
-    if (err) return res.status(500).json({ error: err.sqlMessage });
-    res.json(results);
-  });
+    const sql = `
+        SELECT 
+            MONTH(s.satis_tarih) AS ay,
+            SUM(s.adet * u.fiyat) - COALESCE(SUM(sm.masraf), 0) AS kar
+        FROM satis s
+        JOIN urun u ON s.urun_id = u.urun_id
+        LEFT JOIN sube_masraf sm 
+            ON sm.sube_id = s.sube_id 
+            AND YEAR(sm.masraf_tarihi) = ?
+            AND MONTH(sm.masraf_tarihi) = MONTH(s.satis_tarih)
+        WHERE YEAR(s.satis_tarih) = ?
+          AND s.sube_id = ?
+        GROUP BY MONTH(s.satis_tarih)
+        ORDER BY ay ASC;
+    `;
+
+    db.query(sql, [yil, yil, sube_id], (err, results) => {
+        if (err) return res.status(500).json({ error: "Veri alınamadı" });
+        res.json(results);
+    });
 });
 
+/* ==========================================================
+   🔹 Yıllara göre şubelerin toplam karları
+========================================================== */
+router.get("/sube-toplam-kar", (req, res) => {
+    const { yil } = req.query;
+
+    const sql = `
+        SELECT 
+            s.sube_id,
+            sb.sube_ad,
+            SUM(s.adet * u.fiyat) 
+                - COALESCE((
+                    SELECT SUM(m.masraf)
+                    FROM sube_masraf m
+                    WHERE m.sube_id = s.sube_id
+                      AND YEAR(m.masraf_tarihi) = ?
+                ), 0) AS toplam_kar
+        FROM satis s
+        JOIN urun u ON s.urun_id = u.urun_id
+        JOIN sube sb ON s.sube_id = sb.sube_id
+        WHERE YEAR(s.satis_tarih) = ?
+        GROUP BY s.sube_id, sb.sube_ad
+        ORDER BY toplam_kar DESC;
+    `;
+
+    db.query(sql, [yil, yil], (err, results) => {
+        if (err) return res.status(500).json({ error: "Veri alınamadı" });
+        res.json(results);
+    });
+});
+/* ==========================================================
+   🔹 İlçe puanlarını ilçe_analiz tablosundan hesaplayan API
+========================================================== */
+router.get("/ilce-puanlari", (req, res) => {
+    const sql = `
+        SELECT 
+            ilce_ad,
+            sube_sayisi,
+            rakip_durumu,
+            nufus_durumu,
+            gelir_durumu
+        FROM ilce_analiz
+    `;
+
+    db.query(sql, (err, rows) => {
+        if (err) {
+            console.error("İlçe analiz verisi alınamadı:", err);
+            return res.status(500).json({ error: "Veri alınamadı" });
+        }
+
+        function mapValue(value, type = "normal") {
+            const map = {
+                "Yüksek": type === "ters" ? 40 : 100,
+                "Orta": 70,
+                "Düşük": type === "ters" ? 100 : 40
+            };
+            return map[value] || 0;
+        }
+
+        const puanlar = rows.map(r => {
+            const gelir = mapValue(r.gelir_durumu);
+            const nufus = mapValue(r.nufus_durumu);
+            const rakip = mapValue(r.rakip_durumu, "ters"); // ters mantık
+            const sube_bonus = Math.min(r.sube_sayisi * 10, 10);
+
+            const toplamPuan =
+                gelir * 0.40 +
+                nufus * 0.30 +
+                rakip * 0.20 +
+                sube_bonus;
+
+            return {
+                ilce_ad: r.ilce_ad,
+                puan: Number(toplamPuan.toFixed(1))
+            };
+        });
+
+        puanlar.sort((a, b) => b.puan - a.puan);
+
+        res.json(puanlar);
+    });
+});
+// -------------------------------------------
+//  İLÇE PUANLARI API (Dinamik Hesaplama)
+// -------------------------------------------
+router.get("/ilce-puanlari", (req, res) => {
+
+    const sql = `
+        SELECT 
+            i.ilce_id,
+            i.ilce_ad,
+            i.nufus2025,
+            COUNT(s.sube_id) AS sube_sayisi
+        FROM ilce i
+        LEFT JOIN sube s ON s.ilce_id = i.ilce_id
+        GROUP BY i.ilce_id, i.ilce_ad, i.nufus2025
+        ORDER BY sube_sayisi DESC;
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error("İlçe puanları çekilirken hata:", err);
+            return res.status(500).json({ message: "Sunucu hatası" });
+        }
+
+        // --------------------------
+        // PUAN HESAPLAMA ALGORİTMASI
+        // --------------------------
+        const data = results.map(item => {
+            let puan = 0;
+
+            // Şube sayısı (0–20 arası)
+            puan += (item.sube_sayisi * 10);
+
+            // Nüfus (örnek skala)
+            if (item.nufus2025 > 400000) puan += 40;
+            else if (item.nufus2025 > 250000) puan += 30;
+            else if (item.nufus2025 > 150000) puan += 20;
+            else puan += 10;
+
+            if (puan > 100) puan = 100;
+
+            return {
+                ilce: item.ilce_ad,
+                sube_sayisi: item.sube_sayisi,
+                nufus: item.nufus2025,
+                puan: puan
+            };
+        });
+
+        res.json(data);
+    });
+});
 module.exports = router;
 
 
