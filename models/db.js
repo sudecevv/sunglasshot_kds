@@ -1,6 +1,6 @@
 // models/db.js
 const mysql = require('mysql2');
-const config = require('../config/config.js'); // 🔥 dikkat: ../ ile bir üst klasöre çıkıyoruz
+const config = require('../config/config.js'); 
 
 const db = mysql.createConnection(config);
 
