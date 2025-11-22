@@ -316,26 +316,59 @@ router.get('/kampanya-karlar', (req, res) => {
 // });
 
 // 🔹 Şubenin aylara göre karı
+// router.get("/sube-aylik-kar", (req, res) => {
+//     const { yil, sube_id } = req.query;
+
+//     const sql = `
+//         SELECT 
+//             MONTH(s.satis_tarih) AS ay,
+//             SUM(s.adet * u.fiyat) - COALESCE(SUM(sm.masraf), 0) AS kar
+//         FROM satis s
+//         JOIN urun u ON s.urun_id = u.urun_id
+//         LEFT JOIN sube_masraf sm 
+//             ON sm.sube_id = s.sube_id 
+//             AND YEAR(sm.masraf_tarihi) = ?
+//             AND MONTH(sm.masraf_tarihi) = MONTH(s.satis_tarih)
+//         WHERE YEAR(s.satis_tarih) = ?
+//           AND s.sube_id = ?
+//         GROUP BY MONTH(s.satis_tarih)
+//         ORDER BY ay ASC;
+//     `;
+
+//     db.query(sql, [yil, yil, sube_id], (err, results) => {
+//         if (err) return res.status(500).json({ error: "Veri alınamadı" });
+//         res.json(results);
+//     });
+// });
+// 🔹 Şubenin aylara göre kar (düzeltildi)
 router.get("/sube-aylik-kar", (req, res) => {
     const { yil, sube_id } = req.query;
 
     const sql = `
         SELECT 
             MONTH(s.satis_tarih) AS ay,
-            SUM(s.adet * u.fiyat) - COALESCE(SUM(sm.masraf), 0) AS kar
+            SUM(s.adet * u.fiyat) - COALESCE(sm.toplam_masraf, 0) AS kar
         FROM satis s
         JOIN urun u ON s.urun_id = u.urun_id
-        LEFT JOIN sube_masraf sm 
-            ON sm.sube_id = s.sube_id 
-            AND YEAR(sm.masraf_tarihi) = ?
-            AND MONTH(sm.masraf_tarihi) = MONTH(s.satis_tarih)
+        LEFT JOIN (
+            SELECT 
+                sube_id,
+                YEAR(masraf_tarihi) AS yil,
+                MONTH(masraf_tarihi) AS ay,
+                SUM(masraf) AS toplam_masraf
+            FROM sube_masraf
+            GROUP BY sube_id, yil, ay
+        ) sm 
+        ON sm.sube_id = s.sube_id 
+           AND sm.yil = YEAR(s.satis_tarih) 
+           AND sm.ay = MONTH(s.satis_tarih)
         WHERE YEAR(s.satis_tarih) = ?
           AND s.sube_id = ?
         GROUP BY MONTH(s.satis_tarih)
         ORDER BY ay ASC;
     `;
 
-    db.query(sql, [yil, yil, sube_id], (err, results) => {
+    db.query(sql, [yil, sube_id], (err, results) => {
         if (err) return res.status(500).json({ error: "Veri alınamadı" });
         res.json(results);
     });
