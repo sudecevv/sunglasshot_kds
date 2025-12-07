@@ -2,6 +2,12 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
 
+
+const config = require("../config/config.js");
+
+
+
+
 // 🔹 Belirtilen tablodaki tüm verileri döndür (genel amaçlı endpoint)
 router.get('/data/:table', (req, res) => {
   const tableName = req.params.table;
@@ -507,6 +513,9 @@ router.get("/ilce-puanlari", (req, res) => {
         res.json(data);
     });
 });
+
+
+
 module.exports = router;
 
 

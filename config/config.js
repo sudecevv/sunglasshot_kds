@@ -4,5 +4,7 @@ module.exports = {
   user: 'root',
   password: '',
   database: 'sunglasshot_kds'
+
+  
 };
 
