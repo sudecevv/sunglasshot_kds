@@ -51,6 +51,19 @@ nav ul li a {
     position: relative;
 }
 
+/* Aktif sayfa (Ana Sayfa) */
+nav ul li a.active {
+    color: #ff6700;
+    background-color: rgba(255, 103, 0, 0.08);
+    border-radius: 6px;
+}
+
+/* Aktif sayfanın alt çizgisi sürekli görünsün */
+nav ul li a.active::after {
+    width: 100%;
+}
+
+
 /* Alt çizgi efekti */
 nav ul li a::after {
     content: '';

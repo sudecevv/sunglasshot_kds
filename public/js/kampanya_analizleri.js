@@ -1,155 +1,201 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const sube1Select = document.getElementById("sube1");
-    const sube2Select = document.getElementById("sube2");
-    const yearSelect = document.getElementById("campaign-year");
-    const filterForm = document.getElementById("campaign-filter-form");
 
-    let campaignChart;
+  /* ===============================
+     🔹 ELEMENTLER
+  =============================== */
+  const sube1Select = document.getElementById("sube1");
+  const sube2Select = document.getElementById("sube2");
+  const yearSelect = document.getElementById("campaign-year");
+  const filterForm = document.getElementById("campaign-filter-form");
+  const kampanyaSelect = document.getElementById("kampanyaSelect");
 
-    // 🔹 1️⃣ Şubeleri çek ve dropdownlara ekle
-fetch("http://localhost:3000/api/subeler")
-    .then(res => {
-        if (!res.ok) throw new Error(`Şube listesi alınamadı: ${res.status}`);
-        return res.json();
-    })
+  const comparisonCtx =
+    document.getElementById("campaignComparisonChart").getContext("2d");
+  const etkiCtx =
+    document.getElementById("kampanyaEtkisiChart").getContext("2d");
+
+  let campaignChart = null;
+  let etkiChart = null;
+
+  /* ===============================
+     🔹 ŞUBE DROPDOWN
+  =============================== */
+  fetch("http://localhost:3000/api/subeler")
+    .then(res => res.json())
     .then(subeler => {
-        subeler.forEach(sube => {
-            const opt1 = new Option(sube.sube_ad, sube.sube_id);
-            const opt2 = new Option(sube.sube_ad, sube.sube_id);
-            sube1Select.add(opt1);
-            sube2Select.add(opt2);
-        });
 
-        // ⭐ Varsayılan seçimler
-        if (subeler.length >= 2) {
-            sube1Select.value = subeler[0].sube_id;
-            sube2Select.value = subeler[1].sube_id;
-        }
+      subeler.forEach(s => {
+        sube1Select.add(new Option(s.sube_ad, s.sube_id));
+        sube2Select.add(new Option(s.sube_ad, s.sube_id));
+      });
 
-        // ⭐ Sayfa açıldığında grafik otomatik yüklensin
-        filterForm.dispatchEvent(new Event("submit"));
-    })
-    .catch(err => console.error(err));
-
-
-    // 🔹 2️⃣ Form submit olunca grafiği güncelle
-    filterForm.addEventListener("submit", e => {
-        e.preventDefault();
-
-        const yil = yearSelect.value;
-        const sube1 = sube1Select.value;
-        const sube2 = sube2Select.value;
-
-        if (!yil || !sube1 || !sube2) {
-            alert("Lütfen tüm alanları seçin!");
-            return;
-        }
-
-        fetch(`http://localhost:3000/api/kampanya-performans?yil=${yil}&sube1=${sube1}&sube2=${sube2}`)
-            .then(res => {
-                if (!res.ok) throw new Error(`Kampanya verisi alınamadı: ${res.status}`);
-                return res.json();
-            })
-            .then(data => {
-                const labels = data.map(d => d.kampanya_ad);
-                const sube1Values = data.map(d => Number(d.sube1_toplam));
-                const sube2Values = data.map(d => Number(d.sube2_toplam));
-
-                const ctx = document.getElementById("campaignComparisonChart").getContext("2d");
-
-                if (campaignChart) {
-                    campaignChart.data.labels = labels;
-                    campaignChart.data.datasets[0].data = sube1Values;
-                    campaignChart.data.datasets[1].data = sube2Values;
-                    campaignChart.update();
-                } else {
-                    campaignChart = new Chart(ctx, {
-                        type: "bar",
-                        data: {
-                            labels,
-                            datasets: [
-                                { label: "Şube 1", data: sube1Values, backgroundColor: "#FF6700" },
-                                { label: "Şube 2", data: sube2Values, backgroundColor: "#FFB84D" }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { position: "top" },
-                                title: { display: true, text: `${yil} Yılı Kampanya Kazançları` }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        callback: val => val.toLocaleString("tr-TR") + " ₺"
-                                    }
-                                }
-                            }
-                        }
-                    });
-                }
-            })
-            .catch(err => console.error(err));
-    });
-});
-
-function loadKampanyaKarChart() {
-  fetch("http://localhost:3000/api/kampanya-karlar")
-    .then(res => {
-      if (!res.ok) throw new Error("Kampanya karları verisi alınamadı.");
-      return res.json();
-    })
-    .then(data => {
-      if (!data || data.length === 0) {
-        console.warn("⚠️ Kampanya kar verisi boş geldi");
-        return;
+      if (subeler.length >= 2) {
+        sube1Select.value = subeler[0].sube_id;
+        sube2Select.value = subeler[1].sube_id;
       }
 
-      // 📊 Veriyi yıl bazlı gruplandır
-      const grouped = {};
-      data.forEach(d => {
-        const yil = d.yil || "Bilinmiyor";
-        if (!grouped[yil]) grouped[yil] = [];
-        grouped[yil].push({ kampanya: `${d.kampanya_ad} ${yil}`, kar: Number(d.toplam_kar) });
-      });
+      filterForm.dispatchEvent(new Event("submit"));
+    });
 
-      const labels = data.map(d => `${d.kampanya_ad} ${d.yil}`);
-      const datasets = [{
-        label: "Kampanya Karları (TL)",
-        data: data.map(d => Number(d.toplam_kar)),
-        backgroundColor: "rgba(54, 162, 235, 0.4)",
-        borderColor: "rgba(54, 162, 235, 1)",
-        borderWidth: 1
-      }];
+  /* ===============================
+     🔹 KAMPANYA KARŞILAŞTIRMA
+  =============================== */
+  filterForm.addEventListener("submit", e => {
+    e.preventDefault();
 
-      const ctx = document.getElementById("kampanyaKarChart").getContext("2d");
-      new Chart(ctx, {
-        type: "bar",
-        data: { labels, datasets },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: "top" },
-            title: { display: true, text: "Tüm Yıllardaki Kampanya Karları" }
+    fetch(
+      `http://localhost:3000/api/kampanya-performans?yil=${yearSelect.value}&sube1=${sube1Select.value}&sube2=${sube2Select.value}`
+    )
+      .then(res => res.json())
+      .then(data => {
+
+        if (campaignChart) campaignChart.destroy();
+
+        campaignChart = new Chart(comparisonCtx, {
+          type: "bar",
+          data: {
+            labels: data.map(d => d.kampanya_ad),
+            datasets: [
+              {
+                label: "Şube 1",
+                data: data.map(d => Number(d.sube1_toplam)),
+                backgroundColor: "rgba(157, 72, 232, 1)"
+              },
+              {
+                label: "Şube 2",
+                data: data.map(d => Number(d.sube2_toplam)),
+                backgroundColor: "rgba(238, 130, 238, 0.8)"
+              }
+            ]
           },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: val => val.toLocaleString("tr-TR") + " ₺"
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: `${yearSelect.value} Kampanya Performans Karşılaştırması`
               }
             },
-            x: {
-              ticks: { autoSkip: false, maxRotation: 45, minRotation: 45 }
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: v => v.toLocaleString("tr-TR") + " ₺"
+                }
+              }
             }
           }
-        }
+        });
       });
-    })
-    .catch(err => console.error(err));
-}
+  });
 
+  /* ===============================
+     🔹 KAMPANYA LİSTESİ
+  =============================== */
+  fetch("http://localhost:3000/api/kampanya-listesi")
+    .then(res => res.json())
+    .then(data => {
+
+      kampanyaSelect.innerHTML = "";
+
+      data.forEach(k => {
+        const text =
+          `${k.kampanya_ad} (${new Date(k.baslangic_tarihi).getFullYear()})`;
+        kampanyaSelect.add(new Option(text, k.kampanya_id));
+      });
+
+      // ✅ İlk kampanya otomatik yüklensin
+      if (data.length > 0) {
+        const firstId = data[0].kampanya_id;
+        loadKampanyaEtkisi(firstId);
+        loadKampanyaKPI(firstId);
+      }
+    });
+
+  kampanyaSelect.addEventListener("change", e => {
+    const id = e.target.value;
+    loadKampanyaEtkisi(id);
+    loadKampanyaKPI(id);
+  });
+
+  /* ===============================
+     🔹 KAMPANYA ETKİSİ GRAFİĞİ
+  =============================== */
+  function loadKampanyaEtkisi(id) {
+    fetch(`http://localhost:3000/api/kampanya-oncesi-sonrasi?kampanya_id=${id}`)
+      .then(res => res.json())
+      .then(d => {
+
+        if (etkiChart) etkiChart.destroy();
+
+        const once = Number(d.once_satis);
+        const sonra = Number(d.kampanya_satis);
+
+        const lift =
+          once > 0 ? (((sonra - once) / once) * 100).toFixed(1) : 0;
+
+        const baslangic =
+          new Date(d.baslangic_tarihi).toLocaleDateString("tr-TR");
+        const bitis =
+          new Date(d.bitis_tarihi).toLocaleDateString("tr-TR");
+
+        etkiChart = new Chart(etkiCtx, {
+          type: "bar",
+          data: {
+            labels: [
+              "Öncesi (−30 gün)",
+              `Kampanya (${baslangic} – ${bitis})`
+            ],
+            datasets: [{
+              data: [once, sonra],
+              backgroundColor: [
+                "rgba(130, 120, 255, 0.8)",
+                "rgba(238, 130, 238, 0.8)"
+              ],
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              title: {
+                display: true,
+                text: `${d.kampanya_ad} | Satış Etkisi %${lift}`
+              }
+            },
+            scales: {
+              y: { beginAtZero: true }
+            }
+          }
+        });
+      });
+  }
+
+});
+
+/* ===============================
+   🔹 KPI ALANI
+=============================== */
+function loadKampanyaKPI(kampanyaId) {
+  fetch(`http://localhost:3000/api/kampanya-kpi?kampanya_id=${kampanyaId}`)
+    .then(res => res.json())
+    .then(d => {
+
+      const once = Number(d.once_satis);
+      const sonra = Number(d.kampanya_satis);
+      const ciro = Number(d.kampanya_ciro);
+
+      const artis =
+        once > 0 ? (((sonra - once) / once) * 100).toFixed(1) : 0;
+
+      document.getElementById("kpi-artis").innerText = `%${artis}`;
+      document.getElementById("kpi-adet").innerText =
+        sonra.toLocaleString("tr-TR");
+      document.getElementById("kpi-ciro").innerText =
+        ciro.toLocaleString("tr-TR") + " ₺";
+    });
+}
 
 // Sayfa yüklenince otomatik çalışsın:
 document.addEventListener("DOMContentLoaded", loadKampanyaKarChart);

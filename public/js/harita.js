@@ -1,5 +1,34 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    // ⭐ NÜFUS HARİTASI İÇİN ADAY ŞUBELER
+    const adaySubeler = [
+    {
+        ad: "Konak (Aday)",
+        lat: 38.4192,
+        lon: 27.1287,
+        nufus: 332277
+    },
+    {
+        ad: "Bornova (Aday)",
+        lat: 38.4697,
+        lon: 27.2211,
+        nufus: 445232
+    },
+    {
+        ad: "Bayraklı (Aday)",
+        lat: 38.4622,
+        lon: 27.1671,
+        nufus: 296839
+    }
+    ];
+
+    // ⭐ SATIŞ HARİTASI İÇİN TEK ÖNERİLEN MAĞAZA
+    const onerilenMagaza = {
+    ad: "Bayraklı (Önerilen Mağaza)",
+    lat: 38.4622,
+    lon: 27.1671
+    };
+
     // 🌍 1️⃣ SATIŞ HARİTASI
     const map = L.map('map').setView([38.42, 27.14], 10); // İzmir merkezi
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -13,8 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             data.forEach(sube => {
                 let color;
-                if (sube.toplam_satis < 13000) color = "green";
-                else if (sube.toplam_satis >= 13000 && sube.toplam_satis <= 14000) color = "blue";
+                if (sube.toplam_satis < 20000) color = "green";
+                else if (sube.toplam_satis >= 20000 && sube.toplam_satis <= 40000) color = "blue";
                 else color = "red";
 
                 // 🔹 Marker oluştur
@@ -46,6 +75,22 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         })
         .catch(err => console.error("🚨 Satış haritası verisi alınamadı:", err));
+
+    // ⭐ SADECE ÖNERİLEN MAĞAZA – SATIŞ HARİTASI
+    const oMarker = L.circleMarker([onerilenMagaza.lat, onerilenMagaza.lon], {
+    radius: 12,
+    color: "orange",
+    fillColor: "orange",
+    fillOpacity: 0.9,
+    weight: 4
+    }).addTo(map);
+
+    oMarker.bindPopup(`
+    <b>${onerilenMagaza.ad}</b><br>
+    Satış verisi henüz yok<br>
+    Karar Destek Sistemi Önerisi
+    `);
+
 
 
 
@@ -80,6 +125,30 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(err => console.error("🚨 Nüfus haritası verisi alınamadı:", err));
 
+    // ⭐ ADAY ŞUBELER – SADECE NÜFUS HARİTASI
+    adaySubeler.forEach(sube => {
+    let color;
+    if (sube.nufus < 100000) color = "green";
+    else if (sube.nufus <= 300000) color = "blue";
+    else color = "red";
+
+    const marker = L.circleMarker([sube.lat, sube.lon], {
+        radius: 10,
+        color: "orange",
+        fillColor: color,
+        fillOpacity: 0.85,
+        weight: 3,
+        dashArray: "4"
+    }).addTo(populationMap);
+
+    marker.bindPopup(`
+        <b>${sube.ad}</b><br>
+        Nüfus: ${sube.nufus.toLocaleString("tr-TR")}<br>
+        Durum: Aday Lokasyon
+    `);
+    });
+
+
 
 
     // 📊 3️⃣ GRAFİK (Şube Satışları)
@@ -93,8 +162,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // 🎨 Göz alıcı sabit renk paleti
             const backgroundColors = [
-                "#FF6700", "#FF9900", "#FFB84D", "#FF3D00", "#FF7043",
-                "#FFAB40", "#FF8A00", "#E65100", "#FF5722", "#F57C00"
+                "#ff000040", "#f92b2bff", "#e94c4cff", "#ff000088", "#e91616ff",
+                "#f64747ff", "#ea2a2aff", "#e60000d4", "#ff2222e6", "#f50000ff"
             ];
 
             new Chart(ctx, {
@@ -143,5 +212,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         })
         .catch(err => console.error("🚨 Grafik verisi alınamadı:", err));
+
 
 });

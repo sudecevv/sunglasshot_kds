@@ -34,6 +34,7 @@
             <!-- Aylara Göre Karlar -->
             <div class="chart-item">
                 <h2>Şubelerin Aylara Göre Karları</h2>
+                <button id="toggleMonthlyCompare" style="margin-bottom:10px;">Şubeleri Karşılaştır</button>
                 <form id="top-sales-form">
                     <label for="top-sales-year">Yıl:</label>
                     <select id="top-sales-year">
@@ -62,7 +63,14 @@
                     </select>
                     <button type="submit">Filtrele</button>
                 </form>
-                <canvas id="branchChart"></canvas>
+                <button id="toggleBranchChart" style="margin-bottom:10px;">
+                    Pasta Grafiğe Geç
+                </button>
+
+                <div class="chart-wrapper">
+                    <canvas id="branchChart"></canvas>
+                </div>
+
             </div>
             
             <!-- Şube Analiz Tablosu -->
@@ -83,6 +91,11 @@
                         <tr><td>Karşıyaka</td><td>1</td><td>Yüksek</td><td>Yüksek</td><td>Yüksek</td><td>64.0</td></tr>
                         <tr><td>Balçova</td><td>1</td><td>Yüksek</td><td>Orta</td><td>Yüksek</td><td>60.0</td></tr>
                         <tr><td>Gaziemir</td><td>1</td><td>Yüksek</td><td>Orta</td><td>Orta</td><td>58.5</td></tr>
+
+                                    <!-- Potansiyel İlçeler -->
+                        <tr><td>Konak</td><td>0</td><td>Yüksek</td><td>Yüksek</td><td>Orta</td><td>62.0</td></tr>
+                        <tr><td>Bornova</td><td>0</td><td>Orta</td><td>Yüksek</td><td>Orta</td><td>61.0</td></tr>
+                        <tr style="background-color:#fff3e6"><td>Bayraklı</td><td>0</td><td>Orta</td><td>Orta</td><td>Yüksek</td><td>66.0</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -92,6 +105,16 @@
                 <h2>İlçelerin Puan Grafiği</h2>
                 <canvas id="districtChart"></canvas>
             </div>
+
+            <!-- 📍 Önerilen İlçe -->
+            <div class="recommendation-item">
+                <h2>Önerilen Mağaza Açılış İlçesi</h2>
+                <div class="recommendation-content">
+                    <span id="recommendedDistrictName">Hesaplanıyor...</span>
+                    <span id="recommendedDistrictScore"></span>
+                </div>
+            </div>
+
         </div>
     </main>
 </body>

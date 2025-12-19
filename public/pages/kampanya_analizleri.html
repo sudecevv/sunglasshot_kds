@@ -30,6 +30,23 @@
     </header>
 
     <main>
+        <div class="kpi-container">
+            <div class="kpi-card">
+                <span class="kpi-title">Satış Artış Oranı</span>
+                <span id="kpi-artis" class="kpi-value">%0</span>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-title">Satılan Ürün Adedi</span>
+                <span id="kpi-adet" class="kpi-value">0</span>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-title">Toplam Kampanya Cirosu</span>
+                <span id="kpi-ciro" class="kpi-value">₺0</span>
+            </div>
+        </div>
+
         <div class="chart-container">
             <div class="chart-item">
                 <div class="filter-container">
@@ -54,10 +71,20 @@
                 <h2>Kampanyalar Arası Performans Karşılaştırması</h2>
                 <canvas id="campaignComparisonChart"></canvas>
             </div>
-            <div class="dashboard-card">
+            <!-- <div class="dashboard-card">
                 <h2>Kampanyaların Karları</h2>
                 <canvas id="kampanyaKarChart"></canvas>
+            </div> -->
+
+            <div class="dashboard-card">
+                <h2>Kampanya Öncesi / Sonrası Satış Etkisi</h2>
+
+                <label for="kampanyaSelect">Kampanya:</label>
+                <select id="kampanyaSelect"></select>
+
+                <canvas id="kampanyaEtkisiChart"></canvas>
             </div>
+
 
         </div>
     </main>

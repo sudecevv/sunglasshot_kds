@@ -50,6 +50,19 @@ nav ul li a {
     position: relative;
 }
 
+/* Aktif sayfa (Ana Sayfa) */
+nav ul li a.active {
+    color: #ff6700;
+    background-color: rgba(255, 103, 0, 0.08);
+    border-radius: 6px;
+}
+
+/* Aktif sayfanın alt çizgisi sürekli görünsün */
+nav ul li a.active::after {
+    width: 100%;
+}
+
+
 /* Alt çizgi efekti */
 nav ul li a::after {
     content: '';
@@ -123,6 +136,7 @@ main {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     height: 476px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
 }
 
 .chart-item:hover {
@@ -217,6 +231,64 @@ select:focus {
     border-color: #ff6700;
     box-shadow: 0 0 8px rgba(255, 103, 0, 0.4);
 }
+
+
+#toggleCategoryChart {
+    background: linear-gradient(135deg, #ff9900 0%, #ff6700 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 10px;
+    box-shadow: 0 3px 10px rgba(37, 117, 252, 0.4);
+    transition: all 0.3s ease;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+}
+
+#toggleCategoryChart:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(37, 117, 252, 0.6);
+}
+
+.chart-wrapper {
+    height: 340px;       /* sabit alan */
+    position: relative;
+}
+
+.chart-wrapper canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.corner-btn {
+    background: linear-gradient(135deg, #ff9900 0%, #ff6700 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(255, 103, 0, 0.4);
+    transition: all 0.3s ease;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+}
+
+.corner-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(255, 103, 0, 0.6);
+}
+
 
 /* Mobil Düzen */
 @media (max-width: 768px) {

@@ -1,12 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
-
-
 const config = require("../config/config.js");
-
-
-
 
 // 🔹 Belirtilen tablodaki tüm verileri döndür (genel amaçlı endpoint)
 router.get('/data/:table', (req, res) => {
@@ -36,38 +31,55 @@ router.get('/subeler', (req, res) => {
     });
 });
 
-// 🔹 En çok satış yapan şubeler (yıl parametresiyle)
-router.get('/top-sales', (req, res) => {
+//////////////////////////////
+// 🔹 En çok satış yapan şubeler (yıla göre)
+router.get("/top-sales", (req, res) => {
   const { year } = req.query;
+  if (!year) return res.status(400).json({ error: "Yıl bilgisi gerekli" });
 
-  if (!year) return res.status(400).json({ error: 'Yıl bilgisi gerekli.' });
-
-  const query = `
+  const sql = `
     SELECT 
-      s.sube_ad AS sube_ad,
-      SUM(sa.adet) AS toplam_satis
-    FROM 
-      satis sa
-    JOIN 
-      sube s ON sa.sube_id = s.sube_id
-    WHERE 
-      YEAR(sa.satis_tarih) = ?
-    GROUP BY 
-      s.sube_id
-    ORDER BY 
-      toplam_satis DESC;
+      sb.sube_ad,
+      SUM(s.adet) AS toplam_satis
+    FROM satis s
+    JOIN sube sb ON s.sube_id = sb.sube_id
+    WHERE YEAR(s.satis_tarih) = ?
+    GROUP BY sb.sube_ad
+    ORDER BY toplam_satis DESC;
   `;
 
-  db.query(query, [year], (err, results) => {
+  db.query(sql, [year], (err, results) => {
     if (err) {
-      console.error('❌ En çok satış yapan şubeler sorgusunda hata:', err);
-      return res.status(500).json({ error: 'Veri alınamadı.' });
+      console.error("❌ top-sales hatası:", err);
+      return res.status(500).json({ error: "Veri alınamadı" });
     }
-    console.log(`✅ ${year} yılı en çok satan şubeler:`, results.length);
     res.json(results);
   });
 });
 
+// 🔹 Tüm yıllar – şube satışları
+router.get("/top-sales-all-years", (req, res) => {
+  const sql = `
+    SELECT 
+      YEAR(s.satis_tarih) AS year,
+      sb.sube_ad,
+      SUM(s.adet) AS toplam_satis
+    FROM satis s
+    JOIN sube sb ON s.sube_id = sb.sube_id
+    GROUP BY year, sb.sube_ad
+    ORDER BY year ASC;
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("❌ top-sales-all-years hatası:", err);
+      return res.status(500).json({ error: "Veri alınamadı" });
+    }
+    res.json(results);
+  });
+});
+
+////////////////////////////////////////////
 
 // 🔹 Ürün kategorisine göre şube satış performansı
 router.get('/sube-kategori-performans', (req, res) => {
@@ -224,128 +236,7 @@ router.get('/kampanya-performans', (req, res) => {
     });
 });
 
-router.get('/kampanya-karlar', (req, res) => {
-  const sql = `
-    SELECT 
-      k.kampanya_id,
-      k.kampanya_ad,
-      YEAR(k.baslangic_tarihi) AS yil,
-      COALESCE(SUM(s.adet * u.fiyat), 0) - 
-      COALESCE(SUM(sm.masraf), 0) AS toplam_kar
-    FROM kampanya k
-    LEFT JOIN satis s ON s.kampanya_id = k.kampanya_id
-    LEFT JOIN urun u ON s.urun_id = u.urun_id
-    LEFT JOIN sube_masraf sm ON s.sube_id = sm.sube_id
-    GROUP BY k.kampanya_id, k.kampanya_ad, YEAR(k.baslangic_tarihi)
-    ORDER BY yil ASC, k.kampanya_ad ASC;
-  `;
 
-  db.query(sql, (err, results) => {
-    if (err) {
-      console.error('❌ Kampanya karları hatası:', err);
-      return res.status(500).json({ error: 'Veri alınamadı' });
-    }
-    console.log("✅ Kampanya karları verisi:", results);
-    res.json(results);
-  });
-});
-
-
-// // 🔹 Şube bazlı aylık kar analizi
-// router.get("/sube-aylik-kar", (req, res) => {
-//   const { yil, sube_id } = req.query;
-
-//   const sql = `
-//     SELECT 
-//       MONTH(s.satis_tarih) AS ay,
-//       SUM(s.adet * u.fiyat) - COALESCE(SUM(sm.masraf), 0) AS kar
-//     FROM satis s
-//     JOIN urun u ON s.urun_id = u.urun_id
-//     LEFT JOIN sube_masraf sm 
-//       ON sm.sube_id = s.sube_id 
-//       AND YEAR(sm.masraf_tarihi) = ?
-//       AND MONTH(sm.masraf_tarihi) = MONTH(s.satis_tarih)
-//     WHERE YEAR(s.satis_tarih) = ?
-//       AND s.sube_id = ?
-//     GROUP BY MONTH(s.satis_tarih)
-//     ORDER BY ay ASC;
-//   `;
-
-//   db.query(sql, [yil, yil, sube_id], (err, results) => {
-//     if (err) {
-//       console.error("❌ Şube aylık kar verisi hatası:", err);
-//       return res.status(500).json({ error: "Veri alınamadı" });
-//     }
-//     res.json(results);
-//   });
-// });
-
-// // 🔹 Şubeleri listelemek için
-// router.get("/subeler", (req, res) => {
-//   const sql = "SELECT sube_id, sube_ad FROM sube ORDER BY sube_ad ASC;";
-//   db.query(sql, (err, results) => {
-//     if (err) {
-//       console.error("❌ Şubeler hatası:", err);
-//       return res.status(500).json({ error: "Veri alınamadı" });
-//     }
-//     res.json(results);
-//   });
-// });
-
-// // 🔹 Yıllara göre şubelerin toplam karları
-// router.get("/sube-toplam-kar", (req, res) => {
-//   const { yil } = req.query;
-
-//   const sql = `
-//     SELECT 
-//       s.sube_id,
-//       sube.sube_ad,
-//       SUM(s.adet * u.fiyat) - COALESCE(SUM(sm.masraf), 0) AS toplam_kar
-//     FROM satis s
-//     JOIN urun u ON s.urun_id = u.urun_id
-//     JOIN sube ON s.sube_id = sube.sube_id
-//     LEFT JOIN sube_masraf sm 
-//       ON sm.sube_id = s.sube_id 
-//       AND YEAR(sm.masraf_tarihi) = ?
-//     WHERE YEAR(s.satis_tarih) = ?
-//     GROUP BY s.sube_id, sube.sube_ad
-//     ORDER BY toplam_kar DESC;
-//   `;
-
-//   db.query(sql, [yil, yil], (err, results) => {
-//     if (err) {
-//       console.error("❌ Şube toplam kar hatası:", err);
-//       return res.status(500).json({ error: "Veri alınamadı" });
-//     }
-//     res.json(results);
-//   });
-// });
-
-// 🔹 Şubenin aylara göre karı
-// router.get("/sube-aylik-kar", (req, res) => {
-//     const { yil, sube_id } = req.query;
-
-//     const sql = `
-//         SELECT 
-//             MONTH(s.satis_tarih) AS ay,
-//             SUM(s.adet * u.fiyat) - COALESCE(SUM(sm.masraf), 0) AS kar
-//         FROM satis s
-//         JOIN urun u ON s.urun_id = u.urun_id
-//         LEFT JOIN sube_masraf sm 
-//             ON sm.sube_id = s.sube_id 
-//             AND YEAR(sm.masraf_tarihi) = ?
-//             AND MONTH(sm.masraf_tarihi) = MONTH(s.satis_tarih)
-//         WHERE YEAR(s.satis_tarih) = ?
-//           AND s.sube_id = ?
-//         GROUP BY MONTH(s.satis_tarih)
-//         ORDER BY ay ASC;
-//     `;
-
-//     db.query(sql, [yil, yil, sube_id], (err, results) => {
-//         if (err) return res.status(500).json({ error: "Veri alınamadı" });
-//         res.json(results);
-//     });
-// });
 // 🔹 Şubenin aylara göre kar (düzeltildi)
 router.get("/sube-aylik-kar", (req, res) => {
     const { yil, sube_id } = req.query;
@@ -410,6 +301,8 @@ router.get("/sube-toplam-kar", (req, res) => {
         res.json(results);
     });
 });
+
+
 /* ==========================================================
    🔹 İlçe puanlarını ilçe_analiz tablosundan hesaplayan API
 ========================================================== */
@@ -462,6 +355,9 @@ router.get("/ilce-puanlari", (req, res) => {
         res.json(puanlar);
     });
 });
+
+
+
 // -------------------------------------------
 //  İLÇE PUANLARI API (Dinamik Hesaplama)
 // -------------------------------------------
@@ -514,6 +410,119 @@ router.get("/ilce-puanlari", (req, res) => {
     });
 });
 
+router.get("/kampanya-listesi", (req, res) => {
+  const sql = `
+    SELECT DISTINCT
+      kampanya_id,
+      kampanya_ad,
+      DATE(baslangic_tarihi) AS baslangic_tarihi,
+      DATE(bitis_tarihi) AS bitis_tarihi
+    FROM kampanya
+    WHERE baslangic_tarihi IS NOT NULL
+      AND bitis_tarihi IS NOT NULL
+    ORDER BY baslangic_tarihi
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Kampanya listesi alınamadı" });
+    }
+    res.json(results);
+  });
+});
+
+
+// 🔹 Kampanya Öncesi / Sonrası Satış Etkisi
+router.get("/kampanya-oncesi-sonrasi", (req, res) => {
+  const { kampanya_id, gun = 30 } = req.query;
+
+  if (!kampanya_id)
+    return res.status(400).json({ error: "kampanya_id gerekli" });
+
+  const sql = `
+    SELECT
+      k.kampanya_ad,
+      k.baslangic_tarihi,
+      k.bitis_tarihi,
+
+      SUM(CASE 
+        WHEN s.satis_tarih BETWEEN 
+          DATE_SUB(k.baslangic_tarihi, INTERVAL ? DAY)
+          AND k.baslangic_tarihi
+        THEN s.adet ELSE 0 END
+      ) AS once_satis,
+
+      SUM(CASE 
+        WHEN s.satis_tarih BETWEEN 
+          k.baslangic_tarihi AND k.bitis_tarihi
+        THEN s.adet ELSE 0 END
+      ) AS kampanya_satis
+
+    FROM kampanya k
+    LEFT JOIN satis s ON s.kampanya_id = k.kampanya_id
+    WHERE k.kampanya_id = ?
+    GROUP BY k.kampanya_id
+  `;
+
+  db.query(sql, [gun, kampanya_id], (err, r) => {
+    if (err) {
+      console.error("Kampanya etkisi hatası:", err);
+      return res.status(500).json({ error: "Veri alınamadı" });
+    }
+    res.json(r[0]);
+  });
+});
+
+
+// 🔹 Kampanya KPI Özeti
+router.get("/kampanya-kpi", (req, res) => {
+  const { kampanya_id, gun = 30 } = req.query;
+
+  if (!kampanya_id)
+    return res.status(400).json({ error: "kampanya_id gerekli" });
+
+  const sql = `
+    SELECT
+      k.kampanya_ad,
+
+      -- Önceki dönem satış adedi
+      SUM(CASE 
+        WHEN s.satis_tarih BETWEEN 
+          DATE_SUB(k.baslangic_tarihi, INTERVAL ? DAY)
+          AND k.baslangic_tarihi
+        THEN s.adet ELSE 0 END
+      ) AS once_satis,
+
+      -- Kampanya satış adedi
+      SUM(CASE 
+        WHEN s.satis_tarih BETWEEN 
+          k.baslangic_tarihi AND k.bitis_tarihi
+        THEN s.adet ELSE 0 END
+      ) AS kampanya_satis,
+
+      -- Kampanya cirosu
+      SUM(CASE 
+        WHEN s.satis_tarih BETWEEN 
+          k.baslangic_tarihi AND k.bitis_tarihi
+        THEN s.adet * u.fiyat ELSE 0 END
+      ) AS kampanya_ciro
+
+    FROM kampanya k
+    LEFT JOIN satis s ON s.kampanya_id = k.kampanya_id
+    LEFT JOIN urun u ON s.urun_id = u.urun_id
+    WHERE k.kampanya_id = ?
+    GROUP BY k.kampanya_id;
+  `;
+
+  db.query(sql, [gun, kampanya_id], (err, r) => {
+    if (err) {
+      console.error("Kampanya KPI hatası:", err);
+      return res.status(500).json({ error: "Veri alınamadı" });
+    }
+    res.json(r[0]);
+  });
+});
 
 
 module.exports = router;

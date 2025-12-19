@@ -54,6 +54,19 @@ nav ul li a {
     position: relative;
 }
 
+/* Aktif sayfa (Ana Sayfa) */
+nav ul li a.active {
+    color: #ff6700;
+    background-color: rgba(255, 103, 0, 0.08);
+    border-radius: 6px;
+}
+
+/* Aktif sayfanın alt çizgisi sürekli görünsün */
+nav ul li a.active::after {
+    width: 100%;
+}
+
+
 /* Alt çizgi hover efekti */
 nav ul li a::after {
     content: '';
@@ -294,6 +307,122 @@ form button[type="submit"]:active {
     transform: translateY(0);
     box-shadow: 0 2px 8px rgba(255, 103, 0, 0.3);
 }
+
+.chart-wrapper {
+    height: 340px;
+    position: relative;
+}
+
+.chart-wrapper canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#toggleBranchChart {
+    background: linear-gradient(135deg, #ff7a18 0%, #ff6700 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(255, 103, 0, 0.45);
+    transition: all 0.3s ease;
+}
+
+#toggleBranchChart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(255, 103, 0, 0.65);
+}
+
+/* 🟠 Bar → Pasta geç */
+#toggleBranchChart.pie {
+    background: linear-gradient(135deg, #ff6700 0%, #ff8f00 100%);
+}
+
+/* 🔵 Pie → Bar geç */
+#toggleBranchChart.bar {
+    background: linear-gradient(135deg, #1e88e5 0%, #42a5f5 100%);
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.45);
+}
+
+#toggleBranchChart.bar:hover {
+    box-shadow: 0 6px 18px rgba(30, 136, 229, 0.65);
+}
+
+
+#toggleMonthlyCompare {
+    background: linear-gradient(135deg, #ff7a18 0%, #ff6700 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 8px;
+    box-shadow: 0 4px 12px rgba(255, 103, 0, 0.45);
+    transition: all 0.3s ease;
+}
+
+#toggleMonthlyCompare:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(255, 103, 0, 0.65);
+}
+
+/* 🔵 Tek şubeye dön (mavi ton) */
+#toggleMonthlyCompare.single {
+    background: linear-gradient(135deg, #1e88e5 0%, #42a5f5 100%);
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.45);
+}
+
+#toggleMonthlyCompare.single:hover {
+    box-shadow: 0 6px 18px rgba(30, 136, 229, 0.65);
+}
+
+
+/* ===== 📍 ÖNERİLEN İLÇE ===== */
+.recommendation-item {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #fff7f0, #fff);
+    border: 2px solid #ff6700;
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 4px 14px rgba(255, 103, 0, 0.25);
+    text-align: center;
+}
+
+.recommendation-item h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    background: linear-gradient(135deg, #ff9900 0%, #ff6700 100%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.recommendation-content {
+    font-size: 22px;
+    font-weight: bold;
+    color: #1c1c1c;
+}
+
+#recommendedDistrictName {
+    display: block;
+    font-size: 26px;
+    color: #ff6700;
+    margin-bottom: 6px;
+}
+
+#recommendedDistrictScore {
+    font-size: 16px;
+    color: #555;
+}
+
+
 
 /* ===== MOBİL DÜZEN ===== */
 @media (max-width: 768px) {
