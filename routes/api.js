@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require('../models/db');
 const config = require("../config/config.js");
 
-// 🔹 Belirtilen tablodaki tüm verileri döndür (genel amaçlı endpoint)
 router.get('/data/:table', (req, res) => {
   const tableName = req.params.table;
 
@@ -22,7 +21,7 @@ router.get('/data/:table', (req, res) => {
   });
 });
 
-// 🔹 Şubeleri listele
+
 router.get('/subeler', (req, res) => {
     const sql = `SELECT sube_id, sube_ad FROM sube ORDER BY sube_ad`;
     db.query(sql, (err, results) => {
@@ -31,8 +30,6 @@ router.get('/subeler', (req, res) => {
     });
 });
 
-//////////////////////////////
-// 🔹 En çok satış yapan şubeler (yıla göre)
 router.get("/top-sales", (req, res) => {
   const { year } = req.query;
   if (!year) return res.status(400).json({ error: "Yıl bilgisi gerekli" });
@@ -57,7 +54,6 @@ router.get("/top-sales", (req, res) => {
   });
 });
 
-// 🔹 Tüm yıllar – şube satışları
 router.get("/top-sales-all-years", (req, res) => {
   const sql = `
     SELECT 
@@ -79,9 +75,6 @@ router.get("/top-sales-all-years", (req, res) => {
   });
 });
 
-////////////////////////////////////////////
-
-// 🔹 Ürün kategorisine göre şube satış performansı
 router.get('/sube-kategori-performans', (req, res) => {
   const { year } = req.query;
   if (!year) return res.status(400).json({ error: 'Yıl bilgisi gerekli.' });
@@ -117,7 +110,6 @@ router.get('/sube-kategori-performans', (req, res) => {
   });
 });
 
-// 🧭 Satış Haritası
 router.get("/satis-harita", (req, res) => {
   const sql = `
     SELECT s.sube_ad, s.lat, s.lon, SUM(sa.adet) AS toplam_satis
@@ -133,8 +125,6 @@ router.get("/satis-harita", (req, res) => {
   });
 });
 
-
-// 👥 Nüfus Haritası
 router.get("/nufus-harita", (req, res) => {
   const sql = `
     SELECT 
@@ -157,7 +147,6 @@ router.get("/nufus-harita", (req, res) => {
   });
 });
 
-// Kampanyalara göre toplam kazanç
 router.get('/kampanya-gelirleri', (req, res) => {
   const sql = `
     SELECT k.kampanya_id,
@@ -182,7 +171,6 @@ router.get('/kampanya-gelirleri', (req, res) => {
   });
 });
 
-// server/routes/tahminleme.js
 router.get('/tahmin-veri', (req, res) => {
   const sql = `
     SELECT 
@@ -205,8 +193,6 @@ router.get('/tahmin-veri', (req, res) => {
   });
 });
 
-
-// 2️⃣ Kampanyalar arası toplam kazanç karşılaştırması
 router.get('/kampanya-performans', (req, res) => {
     const { yil, sube1, sube2 } = req.query;
 
@@ -236,8 +222,6 @@ router.get('/kampanya-performans', (req, res) => {
     });
 });
 
-
-// 🔹 Şubenin aylara göre kar (düzeltildi)
 router.get("/sube-aylik-kar", (req, res) => {
     const { yil, sube_id } = req.query;
 
@@ -271,9 +255,6 @@ router.get("/sube-aylik-kar", (req, res) => {
     });
 });
 
-/* ==========================================================
-   🔹 Yıllara göre şubelerin toplam karları
-========================================================== */
 router.get("/sube-toplam-kar", (req, res) => {
     const { yil } = req.query;
 
@@ -302,10 +283,6 @@ router.get("/sube-toplam-kar", (req, res) => {
     });
 });
 
-
-/* ==========================================================
-   🔹 İlçe puanlarını ilçe_analiz tablosundan hesaplayan API
-========================================================== */
 router.get("/ilce-puanlari", (req, res) => {
     const sql = `
         SELECT 
@@ -356,11 +333,6 @@ router.get("/ilce-puanlari", (req, res) => {
     });
 });
 
-
-
-// -------------------------------------------
-//  İLÇE PUANLARI API (Dinamik Hesaplama)
-// -------------------------------------------
 router.get("/ilce-puanlari", (req, res) => {
 
     const sql = `
@@ -432,8 +404,6 @@ router.get("/kampanya-listesi", (req, res) => {
   });
 });
 
-
-// 🔹 Kampanya Öncesi / Sonrası Satış Etkisi
 router.get("/kampanya-oncesi-sonrasi", (req, res) => {
   const { kampanya_id, gun = 30 } = req.query;
 
@@ -474,8 +444,6 @@ router.get("/kampanya-oncesi-sonrasi", (req, res) => {
   });
 });
 
-
-// 🔹 Kampanya KPI Özeti
 router.get("/kampanya-kpi", (req, res) => {
   const { kampanya_id, gun = 30 } = req.query;
 
@@ -523,7 +491,6 @@ router.get("/kampanya-kpi", (req, res) => {
     res.json(r[0]);
   });
 });
-
 
 module.exports = router;
 
