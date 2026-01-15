@@ -42,7 +42,7 @@ CRUD işlemleri RESTful API mimarisi kullanılarak backend tarafında geliştiri
 Proje kapsamında kullanılan veritabanı yapısı aşağıdaki ER diyagramında gösterilmiştir.
 ![ER Diagram][def]
 
-[def]: er_diagram.png
+[def]: erdiyagram.png
 
 ### ER Diyagramı Açıklaması
 
