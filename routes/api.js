@@ -21,6 +21,74 @@ router.get('/data/:table', (req, res) => {
   });
 });
 
+router.delete("/kampanya/:id", (req, res) => {
+  const kampanyaId = req.params.id;
+
+  const checkSql = `
+    SELECT kampanya_bitis_tarihi
+    FROM kampanya
+    WHERE kampanya_id = ?
+  `;
+
+  db.query(checkSql, [kampanyaId], (err, result) => {
+    if (err) return res.status(500).json(err);
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Kampanya bulunamadı" });
+    }
+
+    const bitisTarihi = new Date(result[0].kampanya_bitis_tarihi);
+    const bugun = new Date();
+
+    if (bitisTarihi < bugun) {
+      return res.status(400).json({
+        message: "Bitiş tarihi geçmiş kampanya silinemez"
+      });
+    }
+
+    const deleteSql = `DELETE FROM kampanya WHERE kampanya_id = ?`;
+    db.query(deleteSql, [kampanyaId], (err) => {
+      if (err) return res.status(500).json(err);
+      res.json({ message: "Kampanya başarıyla silindi" });
+    });
+  });
+});
+
+router.put("/kampanya/:id", (req, res) => {
+  const kampanyaId = req.params.id;
+  const { kampanya_ad, kampanya_bitis_tarihi } = req.body;
+
+  const checkSql = `
+    SELECT kampanya_bitis_tarihi
+    FROM kampanya
+    WHERE kampanya_id = ?
+  `;
+
+  db.query(checkSql, [kampanyaId], (err, result) => {
+    if (err) return res.status(500).json(err);
+
+    const eskiBitis = new Date(result[0].kampanya_bitis_tarihi);
+    const bugun = new Date();
+
+    if (eskiBitis < bugun) {
+      return res.status(400).json({
+        message: "Bitiş tarihi geçmiş kampanya güncellenemez"
+      });
+    }
+
+    const updateSql = `
+      UPDATE kampanya
+      SET kampanya_ad = ?, kampanya_bitis_tarihi = ?
+      WHERE kampanya_id = ?
+    `;
+
+    db.query(updateSql, [kampanya_ad, kampanya_bitis_tarihi, kampanyaId], (err) => {
+      if (err) return res.status(500).json(err);
+      res.json({ message: "Kampanya güncellendi" });
+    });
+  });
+});
+
 
 router.get('/subeler', (req, res) => {
     const sql = `SELECT sube_id, sube_ad FROM sube ORDER BY sube_ad`;
