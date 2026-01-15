@@ -69,6 +69,60 @@ PUT /api/kampanya/:id
 (İş kuralı uygulanır)
 DELETE /api/kampanya/:id
 → Kampanya siler
+### Genel Veri Endpoint’i
+- GET /api/data/:table  
+  → İstenilen tablodaki tüm verileri listeler
+### Satış ve Şube Performans Analizleri
+
+- GET /api/top-sales?year=YYYY  
+  → Yıl bazlı en çok satış yapan şubeler
+
+- GET /api/top-sales-all-years  
+  → Tüm yıllara göre şube satış performansı
+
+- GET /api/sube-kategori-performans?year=YYYY  
+  → Şube bazlı kategori satış performansı
+
+- GET /api/subeler  
+  → Şube listesini getirir
+### Harita Tabanlı Analizler
+
+- GET /api/satis-harita  
+  → Şube bazlı satış yoğunluğu harita verisi
+
+- GET /api/nufus-harita  
+  → İlçe bazlı nüfus yoğunluğu harita verisi
+### Kampanya Analizleri
+
+- GET /api/kampanya-gelirleri  
+  → Kampanya bazlı toplam gelir analizi
+
+- GET /api/kampanya-listesi  
+  → Kampanya listeleme
+
+- GET /api/kampanya-oncesi-sonrasi?kampanya_id=X  
+  → Kampanya öncesi ve sonrası satış karşılaştırması
+
+- GET /api/kampanya-kpi?kampanya_id=X  
+  → Kampanya KPI ve ciro analizi
+
+- GET /api/tahmin-veri  
+  → Kampanya bazlı yıllık gelir tahmin verisi
+
+- GET /api/kampanya-performans?yil=YYYY&sube1=A&sube2=B  
+  → İki şube arasında kampanya performans karşılaştırması
+### Kâr Analizleri
+
+- GET /api/sube-aylik-kar?yil=YYYY&sube_id=X  
+  → Şube bazlı aylık kâr analizi
+
+- GET /api/sube-toplam-kar?yil=YYYY  
+  → Yıl bazlı şube toplam kâr analizi
+### İlçe Bazlı Karar Destek Analizleri
+
+- GET /api/ilce-puanlari  
+  → İlçe bazlı puanlama ve şube açma uygunluk analizi
+
 
 ## ER Diyagramı
 Proje kapsamında kullanılan veritabanı yapısı aşağıdaki ER diyagramında gösterilmiştir.
